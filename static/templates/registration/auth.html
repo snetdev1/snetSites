@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/library/pure/pure-release-0.6.0/pure.css">
+    <link rel="stylesheet" type="text/css" href="/static/library/pure/pure-release-0.6.0/grids-responsive.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/library/pure/pure-release-0.6.0/buttons.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/custom/css/presentation.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/custom/css/modules.css">
+    <link rel="stylesheet" type="text/css" href="/static/custom/css/layout.css">
+    <title>SNET | Auth</title>
+
+
+</head>
+<body>
+
+<div class="pure-g">
+    {% if form.errors %}
+    <div class="xbanner pure-u-1-1 background-error">Invalid Login</div>
+    {%elif endSession%}
+    <div class="xbanner pure-u-1-1 background-primary">Goodbye</div>
+    {%elif user.id%}
+    <div class="xbanner pure-u-1-1 background-success">Welcome {{user.first_name}}</div>
+    {%else%}
+    <div class="xbanner pure-u-1-1 background-primary">Please Authenticate</div>
+    {% endif %}
+    <div class="pure-u-1-12 pure-u-sm-1-6 pure-u-md-1-4 pure-u-lg-1-3 pure-u-xl-5-12"></div>
+
+    <div class="pure-u-5-6 pure-u-sm-2-3 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-6">
+        {%if user.id%}
+        <div class="xServices">
+            <div>ID: {{user.id}}</div>
+            <div>First Name: {{user.first_name}}</div>
+            <div>Last Name: {{user.last_name}}</div>
+        </div>
+        {%endif%}
+        {% if not user.id %}{%if not endSession%}
+        <div class="loginFields">
+            <form class="pure-form" method="post" action="/x/login/?next={{ next }}">
+
+
+                {% csrf_token %}
+
+                <div class="loginFields lfusername">
+                    <label for="username">Username:</label>
+                    <input id="username" type="text" placeholder="Username" name="username">
+                </div>
+                <div class="loginFields lfpassword">
+                    <label for="password">Password:</label>
+                    <input id="password" type="password" placeholder="Password" name="password">
+                </div>
+
+
+                <input type="hidden" name="next" value="{{ next }}"/>
+                <button type="submit" class="pure-button pure-button-primary">Login</button>
+
+            </form>
+        </div>
+        {%endif%}
+        {%endif%}
+
+        <div class="footerLinks">
+            <a href="/">Home</a>
+
+            {%if endSession%}<span> | <a href="/x/login/">Login</a></span>
+
+            {%elif user.id%}<span> | <a href="/x/logout/">Logout</a></span>
+
+            {% endif %}
+        </div>
+    </div>
+    <div class="pure-u-1-12 pure-u-sm-1-6 pure-u-md-1-4 pure-u-lg-1-3 pure-u-xl-5-12">
+    </div>
+</div>
+</body>
+</html>

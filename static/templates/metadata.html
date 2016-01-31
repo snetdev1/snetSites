@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>metaData</title>
+
+</head>
+<body>
+<style>
+    .temp1 {
+        font-size: 12px;
+    }
+</style>
+
+<table style="color: red;">
+    {% if u %}
+    <tr>
+        <td class="temp1">user ID:</td>
+        <td class="temp1">{{u.id}}</td>
+    </tr>
+    {%endif%}{%if metaData%}
+    {% for itemName, itemDetail in metaData %}
+    <tr>
+        <td class="temp1">{{itemName}}</td>
+        <td class="temp1">{{itemDetail}}</td>
+    </tr>
+    {%endfor%}{%endif%}
+</table>
+</body>
+</html>

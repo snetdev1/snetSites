@@ -1,0 +1,51 @@
+.loginFields {
+    padding-top: .7em;
+}
+
+.loginFields input {
+    width: 100%;
+    margin: .5em 0em;
+
+}
+
+.loginFields button {
+    margin-top: .7em;
+
+}
+
+.loginFields label {
+}
+
+.xbanner {
+    text-align: center;
+    padding: .7em 0em;
+    color: #fff;
+}
+
+.footerLinks{    text-align: center;
+    color: #ccc;
+    font-size: 12px;
+    margin-top: 32px;
+    }
+.footerLinks a{
+    text-decoration: underline;
+}
+.xServices{
+margin-top: 2em;
+}
+@media screen and (min-width: 35.5em) {
+
+}
+
+@media screen and (min-width: 48em) {
+
+}
+
+@media screen and (min-width: 64em) {
+
+}
+
+@media screen and (min-width: 80em) {
+
+}
+
