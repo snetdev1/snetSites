@@ -3,4 +3,4 @@ sites
 
 holds sites and static content for snet
 
-made by paul
+made by paul synced by paul
