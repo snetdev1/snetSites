@@ -1,0 +1,64 @@
+.frontPageButton {
+    width: 100%;
+    color: white;
+    margin-bottom: 16px;
+    height: 64px;
+    padding-top: 23px;
+
+}
+
+.finderMap {
+    height: 400px;
+    width: 100%;
+    display: block;
+
+}
+
+.searchInput {
+    width: 100%;
+    text-align: center;
+}
+
+.dataContainerStat {
+    float: right;
+}
+
+.votersPerAddressWrapper {
+
+}
+
+.createNewDesc {
+    height: 145px;
+}
+
+@media screen and (min-width: 35.5em) {
+
+}
+
+@media screen and (min-width: 48em) {
+    .frontPageButton {
+        width: 100%;
+        color: white;
+        margin-bottom: 0px;
+        height: 64px;
+        padding-top: 23px;
+
+    }
+
+    .simpleNav {
+
+        font-size: 16px;
+    }
+
+    .votersPerAddressWrapper {
+
+    }
+}
+
+@media screen and (min-width: 64em) {
+
+}
+
+@media screen and (min-width: 80em) {
+}
+

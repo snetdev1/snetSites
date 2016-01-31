@@ -59,7 +59,10 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
                 });
         }
     ])
-    .run(function ($rootScope, $location) {
+
+
+    .run(function ($rootScope, $location, $http, $cookies) {
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.$watch(function () {
                 return $location.path();
             },
@@ -72,8 +75,8 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
 
 
 coreApp
-    .factory('userDetails', function ($resource) {
-        return $resource('/x/u', {
+    .factory('userDetails', function ($resource, $location) {
+        return $resource('https://'+$location.host()+'/x/u', {
             'query': {method: 'GET', isArray: false }
         });
     });
@@ -88,10 +91,11 @@ coreApp
 
     }])
 
-    .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$location', '$routeParams', '$route', function ($rootScope, $scope, userDetails, $location, $routeParams, $route) {
+    .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$location', '$routeParams', '$route',
+        function ($rootScope, $scope, userDetails, $location, $routeParams, $route) {
 
         var nUser = userDetails.query();
-        console.log("trying to get user data")
+        console.log("trying to get user data from" + 'https://'+$location.host()+'/x/u')
         nUser.$promise.then(function (data) {
 
             console.log("from navCtrl: " + data)
@@ -113,7 +117,7 @@ coreApp
             $scope.urlPath = {
                 'navPath': fullPath.split("/")[1]
             }
-            console.log('nav path 115: ' + $scope.urlPath.navPath)
+
         });
 
 
