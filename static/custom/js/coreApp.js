@@ -3,6 +3,7 @@ var currentUser = false
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
     /**
      * The workhorse; converts an object to x-www-form-urlencoded serialization.
@@ -53,7 +54,7 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
                     controller: 'contentCtrl'
                 }).when('/about', {
                     templateUrl: 'core/about.html',
-                    controller: 'contentCtrl'
+                    controller: 'aboutCtrl'
                 }).otherwise({
                     redirectTo: '/'
                 });
@@ -76,7 +77,7 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
 
 coreApp
     .factory('userDetails', function ($resource, $location) {
-        return $resource('https://'+$location.host()+'/x/u', {
+        return $resource('/x/u', {
             'query': {method: 'GET', isArray: false }
         });
     });
@@ -94,35 +95,66 @@ coreApp
     .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$location', '$routeParams', '$route',
         function ($rootScope, $scope, userDetails, $location, $routeParams, $route) {
 
-        var nUser = userDetails.query();
-        console.log("trying to get user data from" + 'https://'+$location.host()+'/x/u')
-        nUser.$promise.then(function (data) {
+            var nUser = userDetails.query();
+            console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL')
+            nUser.$promise.then(function (data) {
 
-            console.log("from navCtrl: " + data)
+                console.log("from navCtrl: " + data)
 
-            if (data != "False") {
-                $scope.u = data
-                $scope.nav = {userNav: data[0].fields.first_name};
-            } else {
-                $scope.u = false
-            }
-        })
-        var fullPath = $location.path();
-        $scope.urlPath = {
-            'navPath': fullPath.split("/")[1]
-        }
-
-        $scope.$on('$locationChangeStart', function (event) {
+                if (data != "False") {
+                    $scope.u = data
+                    $scope.nav = {userNav: data[0].fields.first_name};
+                } else {
+                    $scope.u = false
+                }
+            })
             var fullPath = $location.path();
             $scope.urlPath = {
                 'navPath': fullPath.split("/")[1]
             }
 
-        });
+            $scope.$on('$locationChangeStart', function (event) {
+                var fullPath = $location.path();
+                $scope.urlPath = {
+                    'navPath': fullPath.split("/")[1]
+                }
 
+            });
+
+
+        }])
+    .controller('aboutCtrl', ['$scope', '$location', 'userDetails', function ($scope, $location, userDetails) {
+        $scope.messages = {
+            home: "wannabe",
+            about: "coming soon",
+            two: "Who knows Latin? Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            aboutSubOne: "A message from testApp.js"
+
+        };
+        $scope.tryToGetUserData = function () {
+            $scope.currentUser2 = {
+                u: "Please Authenticate"
+            }
+            console.log('try again to get user data: ' + $location.host())
+            var nUser = userDetails.query();
+
+            nUser.$promise.then(function (data) {
+
+                console.log("from homeCtrl: " + data)
+
+                if (data != "False") {
+                    $scope.currentUser2 = {
+                        u: data[0].fields.first_name
+                    }
+                    //$scope.u = data
+                    //$scope.nav = {userNav: data[0].fields.first_name};
+                } else {
+
+                }
+            })
+        }
 
     }])
-
     .controller('contentCtrl', ['$scope', '$location', '$routeParams', function ($scope, $location, $routeParams) {
 
 

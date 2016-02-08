@@ -1,3 +1,22 @@
+
+<style>
+
+    .poweredBy-new {
+
+    }
+
+    .poweredBy-new img {
+        margin: 6px;
+        height: 64px;
+        width: 64px;
+        cursor: pointer;
+    }
+
+    @media screen and (min-width: 35.5em) {
+        .poweredBy-new-spacer {
+            display: none;
+        }
+    }</style>
 <div class="header">
     <h1>About</h1>
 
@@ -29,6 +48,154 @@
 
     </div>
 
+
+    <div class="button-main pure-button" ng-click="tryToGetUserData()">Get User</div>
+   <br>
+    <div>{{currentUser2.u}}</div>
+
+     <section class="POWERED-BY" >
+        <h2 class="content-subhead" data-ng-click='power.toShow=false'>Powered By:</h2>
+
+        <div class="pure-g">
+            <div class="pure-u-1-1  poweredBy-new">
+
+
+                <img data-ng-click='power.toShow="apache"' src="/static/img/poweredBy/apache-icon.png">
+                <img data-ng-click='power.toShow="django"' src="/static/img/poweredBy/django-icon.png">
+
+                <div class="poweredBy-new-spacer">
+
+
+                </div>
+                <img data-ng-click='power.toShow="mysql"' src="/static/img/poweredBy/mysql_icon.png">
+                <img data-ng-click='power.toShow="angular"' src="/static/img/poweredBy/angular-logo.png">
+
+            </div>
+
+            <!--<div class="pure-u-1-4 poweredBy-new">
+                <img data-ng-click='power.toShow="osx"' src="/static/img/poweredBy/MACOSX_ICON.png">
+                <img data-ng-click='power.toShow="python"' src="/static/img/poweredBy/python_icon.gif">
+
+                <img data-ng-click='power.toShow="wsgi"' src="/static/img/poweredBy/wsgi2.png">
+
+                <img data-ng-click='power.toShow="mysqldb"' src="/static/img/poweredBy/mysqlworkbench-icon.png">
+
+
+            </div>
+            <div class="clear"></div>
+
+            <div class="pure-u-1-4 poweredBy-new">
+
+
+                <img data-ng-click='power.toShow="github"' src="/static/img/poweredBy/blacktocat.png">
+
+                <img data-ng-click='power.toShow="pycharm"' src="/static/img/poweredBy/Intellij-PyCharm.png">
+
+            </div>
+
+            <div class="pure-u-1-4 poweredBy-new">
+
+
+                <img data-ng-click='power.toShow="pure"' src="/static/img/poweredBy/pure-layout-icon.jpg">
+
+                <img data-ng-click='power.toShow="arduino"' src="/static/img/poweredBy/Arduino.png">
+            </div>--> </div>
+    </section>
+
+
+    <div data-ng-hide="power.toShow"><h2 class="content-subhead">My Stack</h2>
+
+        <p>
+            The internet of things is fun.
+        </p></div>
+    <div data-ng-if="power.toShow=='osx'">
+        <h2 class="content-subhead">OS X</h2>
+
+        <p>
+            We've cobbled together a few old MacBooks and even a tank of a G4 to make sNet. There will likely be a drive
+            failure any day now.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='apache'">
+        <h2 class="content-subhead">Apache2</h2>
+
+        <p>
+            The web server runs <a href="http://www.apache.org/">Apache</a>. It conveniently ships with OSX.
+            <br>
+            Also, please accept my self-signed security certificate!
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='wsgi'">
+        <h2 class="content-subhead">mod_wsgi</h2>
+
+        <p>
+            Thank God for the webserver gateway interface!
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='python'">
+        <h2 class="content-subhead">Python</h2>
+
+        <p>
+            Everyone should know python. We use it to make our API.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='mysqldb'">
+        <h2 class="content-subhead">MySQL-Python</h2>
+
+        <p>
+            We can't take any credit here. pip install did all the work for the database tools.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='mysql'">
+        <h2 class="content-subhead">MySQL</h2>
+
+        <p>
+            MySQL is ubiquitous and well documented.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='django'">
+        <h2 class="content-subhead">Django</h2>
+
+        <p>
+            Restful Django is powerful stuff.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='github'">
+        <h2 class="content-subhead">GitHub</h2>
+
+        <p>
+            Eventually, we'll add a link to our repository here.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='pycharm'">
+        <h2 class="content-subhead">Pycharm</h2>
+
+        <p>
+            Syntax errors be gone!
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='angular'">
+        <h2 class="content-subhead">AngularJS</h2>
+
+        <p>
+            Learn it. Live it. Love it.
+        </p>
+    </div>
+    <div data-ng-if="power.toShow=='pure'">
+        <h2 class="content-subhead">Pure</h2>
+
+        <p>
+            Dapper
+        </p>
+    </div>
+
+    <div data-ng-if="power.toShow=='arduino'">
+        <h2 class="content-subhead">Arduino</h2>
+
+        <p>
+            Making our internet of things.
+        </p>
+    </div>
 
 </div>
 

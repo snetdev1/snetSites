@@ -22,17 +22,21 @@
     color: #fff;
 }
 
-.footerLinks{    text-align: center;
+.footerLinks {
+    text-align: center;
     color: #ccc;
     font-size: 12px;
     margin-top: 32px;
-    }
-.footerLinks a{
+}
+
+.footerLinks a {
     text-decoration: underline;
 }
-.xServices{
-margin-top: 2em;
+
+.xServices {
+    margin-top: 2em;
 }
+
 @media screen and (min-width: 35.5em) {
 
 }

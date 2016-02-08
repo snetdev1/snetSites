@@ -53,23 +53,22 @@
                 </li>
 
                 <li data-ng-if="nav.userNav" class="pure-menu-item" class="menu-item-divided pure-menu-selected">
-                    <a href="/x/" class="pure-menu-link">Data</a>
+                    <a href="/x/" class="pure-menu-link">Projects</a>
 
                 </li>
 
 
-                <li data-ng-if="nav.userNav" class="pure-menu-item">
+                <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
                     <a href="/x/admin/" class="pure-menu-link">Admin</a>
                 </li>
-                <li data-ng-if="nav.userNav" class="pure-menu-item">
-                    <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>
                 <li data-ng-if="nav.userNav" class="pure-menu-item">
                     <a href="/logout" class="pure-menu-link">Logout</a>
                 </li>
                 <li data-ng-hide="nav.userNav" class="pure-menu-item">
-                    <a href="/login" class="pure-menu-link">Login</a>
+                    <a href="/x/login" class="pure-menu-link">Login</a>
                 </li>
-
+                <!--<li data-ng-if="nav.userNav" class="pure-menu-item">
+                    <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
 
             </ul>
 
