@@ -1,63 +1,90 @@
+<style>
+    .createrMap {
+        height: 300px;
+        width: 100%;
+        display: block;
+
+    }
+
+    .addressSearch {
+    }
+
+    .custom-marker {
+        font-size: 2em;
+        padding: 10px;
+        background: #fff;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        border: #7F7F7F solid 1px;
+        text-align: center;
+    }
+
+    .custom-marker:after {
+        content: '';
+        position: absolute;
+        border-style: solid;
+        border-width: 7px 6px 0;
+        border-color: #fff transparent;
+        display: block;
+        width: 0;
+        z-index: 1;
+        margin-left: -6px;
+        bottom: -6px;
+        left: 50%;
+    }
+
+    .custom-marker:before {
+        content: '';
+        position: absolute;+
+        border-style: solid;
+        border-width: 7px 6px 0;
+        border-color: #7F7F7F transparent;
+        display: block;
+        width: 0;
+        z-index: 0;
+        margin-left: -6px;
+        bottom: -7px;
+        left: 50%;
+    }
+
+    .selected {
+        background: yellow;
+    }
+
+    div[ng-controller] {
+        position: relative;
+    }
+
+    #panel {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        display: none;
+    }
+</style>
+
 <div class="pure-g">
     <div class="pure-u-1-12 "></div>
     <div class="pure-u-5-6 ">
-        <form class="pure-form pure-form-aligned">
-            <fieldset>
-                <div class="pure-control-group">
-                    <label for="name">Name</label>
-                    <input id="name" type="text" placeholder="Who are you?">
-                </div>
-
-                <div class="pure-control-group">
-                    <label for="foo">Description</label>
-                    <textarea class="createNewDesc" id="foo" type="text"
-                              placeholder="What are you up to?"></textarea>
-                </div>
-
-                <div class="pure-control-group">
-                    <label for="cb" class="pure-checkbox">
-                        <input id="cb" type="checkbox" data-ng-model="addressSource.currentLocation">
-                        Use Current Location
-                    </label>
-                </div>
-                <hr>
-
-                <section data-ng-show="addressSource.currentLocation">
-                    <map class="finderMap" center='current-position'
-                         geo-fallback-center="[40.74, -74.18]"
-                         geo-callback="vm.callbackFunc('you')">
-                        <marker position="current-location">
-
-                        </marker>
-
-                    </map>
-                </section>
-
-                <selction data-ng-hide="addressSource.currentLocation"><section data-ng-controller="createCtrl as vm">
+        <div ng-controller="MyCtrl as vm">
 
 
-                    <map class="finderMap" center='current-position'
-                         geo-fallback-center="[40.74, -74.18]"
-                         geo-callback="vm.callbackFunc('you')"
-                         on-click="vm.addMarker()">
-                        <marker ng-repeat="pos in vm.positions" position="{{pos.lat}}, {{pos.lng}}"></marker>
-                    </map>
+            <div id="panel">
+                <!--<input ng-click="vm.hideMarkers()" type=button value="Hide Markers">-->
+                <!--<input ng-click="vm.showMarkers()" type=button value="Show All Markers">-->
 
-                    <div class="pure-control-group"><label for="address">Street Address</label>
-                        <input id="address" type="text" placeholder="Address"></div>
-                    <div class="pure-control-group"><label for="city">City</label>
-                        <input id="city" type="text" placeholder="City"></div>
-                    <div class="pure-control-group"><label for="state">State</label>
-                        <input id="state" type="text" placeholder="State"></div>
-                    <div class="pure-control-group"><label for="zip">Zip</label>
-                        <input id="zip" type="text" placeholder="zip">
-                    </div>
-                    <hr>
-               </section> </selction>
-                <button type="submit" class="pure-button pure-button-primary">Submit</button>
-
-            </fieldset>
-        </form>
+            </div>
+            <ng-map class="createrMap" center="{{address}}" zoom="16" on-click="vm.addMarker()">
+                <marker ng-repeat="pos in vm.positions" position="{{pos}}"></marker>
+            </ng-map>
+             <input ng-model="address" /><input ng-click="vm.findMe()" class="pure-button" type=button value="Use Current Location">
+        </div>
     </div>
     <div class="pure-u-1-12"></div>
 </div>

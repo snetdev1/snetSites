@@ -154,73 +154,44 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         };
 
 
-    }]).controller('createCtrl', ['$scope', 'latLngAddressLookup', function ($scope, latLngAddressLookup) {
+    }]).controller('createCtrl',function (NgMap) {
 
-        $scope.messages = {
-            welcome: "create a new thing!"
-
-
-        };
-
+    }).controller('MyCtrl', function (NgMap, $scope) {
+        $scope.creating={
+            name:'Who are you?',
+            desc:'What are you doing?',
+            start:'1:00PM',
+            end:'4:00PM'
+        }
         var vm = this;
-        vm.message = 'You can not hide. :)';
-        vm.callbackFunc = function (param) {
-            console.log('I know where ' + param + ' are. ' + vm.message);
-            console.log('You are at' + vm.map.getCenter());
+        vm.positions = ['current-location'];
+        $scope.address='current-location'
+
+        vm.addMarker = function (event) {
+            vm.positions = [];
+            var ll = event.latLng;
+            vm.positions.push(ll.lat() + ", " + ll.lng());
+            console.log(vm.positions)
+        }
+        vm.deleteMarkers = function () {
+            vm.positions = [];
+        };
+        vm.findMe = function () {
+            vm.positions = ['current-location'];
+            $scope.address='current-location'
+        };
+        vm.showMarkers = function () {
+            for (var key in vm.map.markers) {
+                vm.map.markers[key].setMap(vm.map);
+            }
+            ;
+        };
+        vm.hideMarkers = function () {
+            for (var key in vm.map.markers) {
+                vm.map.markers[key].setMap(null);
+            }
+            ;
         };
 
-        $scope.addressSource = {
-            currentLocation: true,
-            html5found: false
+    });
 
-        }
-        $scope.findMe = function (indicatorStatus) {
-            if (indicatorStatus==true) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function (position) {
-                        var pos = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        }
-
-                        $scope.addressSource.currentLocation = true
-                        console.log(pos.lat + " " + pos.lng)
-                        var testGet = latLngAddressLookup.query({latLng: pos.lat + "," + pos.lng})
-                        console.log(testGet)
-
-
-                    })
-                } else {
-                    $scope.addressSource.currentLocation = false
-
-
-                }
-            } else {
-                console.log('other status line 200')
-            }
-        }
-
-        vm.positions = [];
-        vm.addMarker = function(event) {
-            vm.positions = [];
-        var ll = event.latLng;
-        vm.positions.push({lat:ll.lat(), lng: ll.lng()});
-      }
-    }]);
-
-
-function findMe() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            }
-
-            console.log(pos.lat + " " + pos.lng)
-
-
-        })
-    }
-
-}
