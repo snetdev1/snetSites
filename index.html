@@ -6,7 +6,7 @@
     <meta name="description"
           content="A layout example with a side menu that hides on mobile, just like the Pure website.">
 
-    <title>SNET</title>
+    <title>PES.net</title>
 
 
     <link rel="stylesheet" href="/static/library/pure/pure-release-0.6.0/pure.css">
@@ -20,6 +20,7 @@
     <!--<![endif]-->
 
     <link rel="stylesheet" href="static/custom/css/presentation.css">
+    <script type="text/javascript" src="/static/custom/js/coreConfig.js"></script>
 
     <style>
         .pureMenuSelected {
@@ -33,7 +34,7 @@
 <script>
     window.fbAsyncInit = function () {
         FB.init({
-            appId: '833653886757863',
+            appId: fbAppID,
             xfbml: true,
             version: 'v2.5'
         });
@@ -89,7 +90,7 @@
                 </li>
                 <!--<li data-ng-if="nav.userNav" class="pure-menu-item">
                     <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
-
+  <li class="pure-menu-item"><button ng-click="login_fb()">Login with Facebook</button>  </li>
             </ul>
 
 
@@ -117,7 +118,7 @@
 <script type="text/javascript" src="/static/library/ngStorage.js"></script>
 <script type="text/javascript" src="/static/library/lodash.js"></script>
 <script type="text/javascript" src="/static/library/underscore-min.js"></script>
-
+<script type="text/javascript" src="/static/library/ng/restangular.js"></script>
 <script type="text/javascript" src="static/custom/js/coreApp.js"></script>
 
 

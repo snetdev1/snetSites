@@ -1,6 +1,6 @@
 var currentUser = false
 
-var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage'], function ($httpProvider) {
+var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'restangular'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
@@ -80,7 +80,55 @@ coreApp
         return $resource('/x/u', {
             'query': {method: 'GET', isArray: false }
         });
-    });
+    })
+    .factory('Facebook',
+        ["$q", "$window", "$rootScope",
+            function ($q, $window, $rootScope) {
+
+                // since we are resolving a thirdparty response,
+                // we need to do so in $apply
+                var resolve = function (errval, retval, deferred) {
+                    $rootScope.$apply(function () {
+                        if (errval) {
+                            deferred.reject(errval);
+                        } else {
+                            retval.connected = true;
+                            deferred.resolve(retval);
+                        }
+                    });
+                }
+
+                var _login = function () {
+                    var deferred = $q.defer();
+                    //first check if we already have logged in
+                    FB.getLoginStatus(function (response) {
+                        if (response.status === 'connected') {
+                            // the user is logged in and has authenticated your
+                            // app
+                            console.log("fb user already logged in");
+                            deferred.resolve(response);
+                        } else {
+                            // the user is logged in to Facebook,
+                            // but has not authenticated your app
+                            FB.login(function (response) {
+                                if (response.authResponse) {
+                                    console.log("fb user logged in");
+                                    resolve(null, response, deferred);
+                                } else {
+                                    console.log("fb user could not log in");
+                                    resolve(response.error, null, deferred);
+                                }
+                            });
+                        }
+                    });
+
+                    return deferred.promise;
+                }
+
+                return{
+                    login: _login
+                };
+            }]);
 
 coreApp
     .controller('templateCtrl', ['$scope', function ($scope) {
@@ -92,22 +140,43 @@ coreApp
 
     }])
 
-    .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$location', '$routeParams', '$route',
-        function ($rootScope, $scope, userDetails, $location, $routeParams, $route) {
+    .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
+        'Facebook',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
 
-            var nUser = userDetails.query();
+            $scope.login_fb = function () {
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+                Facebook.login().then(function (response) {
+                    //we come here only if JS sdk login was successful so lets
+                    //make a request to our new view. I use Restangular, one can
+                    //use regular http request as well.
+                    var reqObj = {"access_token": response.authResponse.accessToken,
+                        "backend": "facebook"};
+                    var u_b = Restangular.all('/x/sociallogin/');
+
+                    u_b.post(reqObj).then(function (response) {
+                        $location.path('/home');
+                    }, function (response) { /*error*/
+                        console.log("There was an error", response);
+                        //deal with error here.
+                    });
+                });
+            }
+
+
+            //var nUser = userDetails.query();
             console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL')
-            nUser.$promise.then(function (data) {
+            //nUser.$promise.then(function (data) {
 
-                console.log("from navCtrl: " + data)
-
-                if (data != "False") {
-                    $scope.u = data
-                    $scope.nav = {userNav: data[0].fields.first_name};
-                } else {
-                    $scope.u = false
-                }
-            })
+            //    console.log("from navCtrl: " + data)
+//
+            //              if (data != "False") {
+            //                $scope.u = data
+            //              $scope.nav = {userNav: data[0].fields.first_name};
+            //        } else {
+            //          $scope.u = false
+            //    }
+            //})
             var fullPath = $location.path();
             $scope.urlPath = {
                 'navPath': fullPath.split("/")[1]
