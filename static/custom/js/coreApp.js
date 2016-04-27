@@ -144,39 +144,7 @@ coreApp
         'Facebook',
         function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
 
-            $scope.login_fb = function () {
-                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-                Facebook.login().then(function (response) {
-                    //we come here only if JS sdk login was successful so lets
-                    //make a request to our new view. I use Restangular, one can
-                    //use regular http request as well.
-                    var reqObj = {"access_token": response.authResponse.accessToken,
-                        "backend": "facebook"};
-                    var u_b = Restangular.all('/x/sociallogin/');
 
-                    u_b.post(reqObj).then(function (response) {
-                        $location.path('/home');
-                    }, function (response) { /*error*/
-                        console.log("There was an error", response);
-                        //deal with error here.
-                    });
-                });
-            }
-
-
-            //var nUser = userDetails.query();
-            console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL')
-            //nUser.$promise.then(function (data) {
-
-            //    console.log("from navCtrl: " + data)
-//
-            //              if (data != "False") {
-            //                $scope.u = data
-            //              $scope.nav = {userNav: data[0].fields.first_name};
-            //        } else {
-            //          $scope.u = false
-            //    }
-            //})
             var fullPath = $location.path();
             $scope.urlPath = {
                 'navPath': fullPath.split("/")[1]
@@ -189,6 +157,52 @@ coreApp
                 }
 
             });
+            $scope.getUserDetails = function () {
+                var nUser = userDetails.query();
+                console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL')
+                nUser.$promise.then(function (data) {
+
+                    console.log("from navCtrl: " + data)
+
+                    if (data != "False") {
+                        $scope.u = data
+                        $scope.nav = {userNav: data[0].fields.first_name};
+                        $scope.navItems = {
+                            projects: 'Projects',
+                            admin: 'Admin',
+                            logout: 'Logout'
+
+                        }
+                    } else {
+                        $scope.u = false
+                    }
+
+                })
+            }
+
+
+            $scope.login_fb = function () {
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+                Facebook.login().then(function (response) {
+                    //we come here only if JS sdk login was successful so lets
+                    //make a request to our new view. I use Restangular, one can
+                    //use regular http request as well.
+                    var reqObj = {"access_token": response.authResponse.accessToken,
+                        "backend": "facebook"};
+                    var u_b = Restangular.all('/x/sociallogin/');
+
+                    u_b.post(reqObj).then(function (response) {
+                        $location.path('/');
+                        $scope.getUserDetails()
+                        $scope.loading = {
+                            isComplete: true}
+                    }, function (response) { /*error*/
+                        console.log("There was an error", response);
+                        //deal with error here.
+                    });
+                });
+            }
+            $scope.getUserDetails()
 
 
         }])

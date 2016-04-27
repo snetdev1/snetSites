@@ -27,6 +27,22 @@
             background: #333;
         }
 
+        .fbLoginLogo {
+            height: 19px;
+            opacity: 0.7;
+            vertical-align: middle;
+        }
+
+        .loadScreen {
+            height: 100%;
+            width: 100%;
+            background-color: white;
+            z-index: 100;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            display: none;
+        }
     </style>
 
 </head>
@@ -60,11 +76,12 @@
     </a>
 
     <div id="menu">
-        <div class="pure-menu">
+        <div data-ng-hide="loading.isComplete" class='loadScreen'></div>
+        <div class="pure-menu" data-ng-controller="navCtrl">
 
             <a class="pure-menu-heading " href="#/">pes.net</a>
 
-            <ul class="pure-menu-list" data-ng-controller="navCtrl">
+            <ul class="pure-menu-list">
                 <li class="pure-menu-item">
                     <a href="#/" class="pure-menu-link" data-ng-class="{pureMenuSelected:urlPath.navPath==''}">Home</a>
                 </li>
@@ -73,24 +90,28 @@
                        data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}"> About</a>
                 </li>
 
-                <li data-ng-if="nav.userNav" class="pure-menu-item" class="menu-item-divided pure-menu-selected">
-                    <a href="/x/" class="pure-menu-link">Projects</a>
+
+                <li data-ng-hide="nav.userNav" class="pure-menu-item" ng-click="login_fb()">
+                    <a class="pure-menu-link ">
+                        Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
+                    </a>
+                </li>
+                <li class="pure-menu-item " data-ng-if="nav.userNav">
+                    <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
 
                 </li>
 
 
                 <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
-                    <a href="/x/admin/" class="pure-menu-link">Admin</a>
+                    <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
                 </li>
                 <li data-ng-if="nav.userNav" class="pure-menu-item">
-                    <a href="/logout" class="pure-menu-link">Logout</a>
+                    <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
                 </li>
-                <li data-ng-hide="nav.userNav" class="pure-menu-item">
-                    <a href="/x/login" class="pure-menu-link">Login</a>
-                </li>
-                <!--<li data-ng-if="nav.userNav" class="pure-menu-item">
+
+                <!--<li data-ng-if=" nav.userNav" class="pure-menu-item">
                     <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
-  <li class="pure-menu-item"><button ng-click="login_fb()">Login with Facebook</button>  </li>
+
             </ul>
 
 
@@ -101,13 +122,15 @@
     <div id="main" data-ng-view="">
 
     </div>
-    <footer class="content">    <div
-                            class="fb-like"
-                            data-share="true"
-                            data-width="450"
-                            data-show-faces="false">
+    <footer class="content">
+        <div
+                class="fb-like"
+                data-share="true"
+                data-width="450"
+                data-show-faces="false">
 
-                            </div></footer>
+        </div>
+    </footer>
 </div>
 
 
