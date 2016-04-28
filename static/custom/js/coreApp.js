@@ -192,7 +192,7 @@ coreApp
                     var u_b = Restangular.all('/x/sociallogin/');
 
                     u_b.post(reqObj).then(function (response) {
-                        $location.path('/');
+                        //$location.path('/');
                         $scope.getUserDetails()
                         $scope.loading = {
                             isComplete: true}
@@ -209,7 +209,7 @@ coreApp
     .controller('aboutCtrl', ['$scope', '$location', 'userDetails', function ($scope, $location, userDetails) {
         $scope.messages = {
             home: "wannabe",
-            about: "coming soon",
+            about: "This Site",
             two: "Who knows Latin? Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
             aboutSubOne: "A message from testApp.js"
 
