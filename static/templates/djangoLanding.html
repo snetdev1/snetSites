@@ -25,9 +25,9 @@
 
     <div class="pure-u-5-6 pure-u-sm-2-3 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-6">
 
-        {%if u.id%}{% for project in p %}
-        <a href="/x/{{project.location}}" class="xServices pure-button fullWidth">{{project.name}}</a>
-        {%endfor%}
+        {%if u.id%}{%if p%}{% for project in p %}
+        <a href="{{project.location}}" class="xServices pure-button fullWidth">{{project.name}}</a>
+        {%endfor%}{%else%}<div class="xServices centerText ">You have no projects</div>{%endif%}
         {%else%}
 
         <div class="xServices centerText ">All services require login</div>
