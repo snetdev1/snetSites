@@ -96,16 +96,16 @@
                         Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
                     </a>
                 </li>
-                <li class="pure-menu-item " data-ng-if="nav.userNav">
-                    <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
+                <li class="pure-menu-item "  data-ng-if="nav.userNav">
+                    <a ng-cloak href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
 
                 </li>
 
 
-                <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
+                <li data-ng-cloak data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
                     <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
                 </li>
-                <li data-ng-if="nav.userNav" class="pure-menu-item">
+                <li data-ng-cloak data-ng-if="nav.userNav" class="pure-menu-item">
                     <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
                 </li>
 
