@@ -151,6 +151,7 @@ coreApp
             }
 
             $scope.$on('$locationChangeStart', function (event) {
+
                 var fullPath = $location.path();
                 $scope.urlPath = {
                     'navPath': fullPath.split("/")[1]
@@ -159,7 +160,7 @@ coreApp
             });
             $scope.getUserDetails = function () {
                 var nUser = userDetails.query();
-                console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL')
+                console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL!!')
                 nUser.$promise.then(function (data) {
 
                     console.log("from navCtrl: " + data)
@@ -173,11 +174,19 @@ coreApp
                             logout: 'Logout'
 
                         }
+
                     } else {
                         $scope.u = false
                     }
+                    $scope.loading = {
+                        isComplete: true}
+                    console.log(loading.isComplete)
 
-                })
+                }).catch(function () {
+                        $scope.loading = {
+                            isComplete: true}
+                        console.log(loading.isComplete)
+                    })
             }
 
 
@@ -194,8 +203,7 @@ coreApp
                     u_b.post(reqObj).then(function (response) {
                         //$location.path('/');
                         $scope.getUserDetails()
-                        $scope.loading = {
-                            isComplete: true}
+
                     }, function (response) { /*error*/
                         console.log("There was an error", response);
                         //deal with error here.

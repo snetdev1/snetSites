@@ -1,46 +1,32 @@
-<style>.selectedNav {
-    text-decoration: underline;
+<ul class="pure-menu-list">
+                <li class="pure-menu-item">
+                    <a href="#/" class="pure-menu-link" data-ng-class="{pureMenuSelected:urlPath.navPath==''}">Home</a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#/about" class="pure-menu-link"
+                       data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}"> About</a>
+                </li>
 
-}
 
-nav {
-    background: rgb(202, 60, 60); /* this is a maroon */
-    color: #f2f2f2;
-}
+                <li data-ng-hide="nav.userNav" class="pure-menu-item" ng-click="login_fb()">
+                    <a class="pure-menu-link ">
+                        Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
+                    </a>
+                </li>
+                <li class="pure-menu-item "  data-ng-if="nav.userNav">
+                    <a  href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
 
-nav a {
-    text-align: center;
-    padding: 10px 0px;
-}
-</style>
+                </li>
 
-<nav data-ng-controller="navCtrl">
-    <div class="pure-g">
-        <div class="pure-u-1-4">
 
-        </div>
-        <a href="#/" class="pure-u-1-8" data-ng-class="{selectedNav:urlPath.navPath==''}">
+                <li  data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
+                    <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
+                </li>
+                <li  data-ng-if="nav.userNav" class="pure-menu-item">
+                    <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
+                </li>
 
-            home
+                <!--<li data-ng-if=" nav.userNav" class="pure-menu-item">
+                    <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
 
-        </a>
-        <a href="#/pageone" class="pure-u-1-8" data-ng-class="{selectedNav:urlPath.navPath=='pageone'}">
-
-            one
-
-        </a>
-        <a href="#/pagetwo" class="pure-u-1-8" data-ng-class="{selectedNav:urlPath.navPath=='pagetwo'}">
-
-            two
-
-        </a>
-
-        <a href="#" data-ng-if="messages.userName" class="pure-u-1-8">Welcome {{messages.userName}}</a>
-
-        <div class="pure-u-1-4">
-
-        </div>
-        <div class="pure-u-1-1">{{urlPath.navPath}}</div>
-
-    </div>
-</nav>
+            </ul>

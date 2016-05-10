@@ -8,6 +8,8 @@
 
     <title>PES.net</title>
 
+    <script type="text/javascript" src="/static/custom/js/coreConfig.js"></script>
+    <script type="text/javascript" src="/static/library/ng/angular.js"></script>
 
     <link rel="stylesheet" href="/static/library/pure/pure-release-0.6.0/pure.css">
 
@@ -20,7 +22,7 @@
     <!--<![endif]-->
 
     <link rel="stylesheet" href="static/custom/css/presentation.css">
-    <script type="text/javascript" src="/static/custom/js/coreConfig.js"></script>
+
 
     <style>
         .pureMenuSelected {
@@ -36,12 +38,15 @@
         .loadScreen {
             height: 100%;
             width: 100%;
-            background-color: white;
-            z-index: 100;
+            background-image: url('/static/img/239.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #ffffff;
+            z-index: 10000;
             position: absolute;
             top: 0px;
             left: 0px;
-            display: none;
+
         }
     </style>
 
@@ -67,7 +72,9 @@
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 </script>
-
+<section data-ng-controller="navCtrl">
+    <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
+</section>
 <div id="layout">
     <!-- Menu toggle -->
     <a href="#menu" id="menuLink" class="menu-link">
@@ -76,7 +83,7 @@
     </a>
 
     <div id="menu">
-        <div data-ng-hide="loading.isComplete" class='loadScreen'></div>
+
         <div class="pure-menu" data-ng-controller="navCtrl">
 
             <a class="pure-menu-heading " href="#/">pes.net</a>
@@ -96,16 +103,16 @@
                         Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
                     </a>
                 </li>
-                <li class="pure-menu-item "  data-ng-if="nav.userNav">
-                    <a ng-cloak href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
+                <li class="pure-menu-item " data-ng-if="nav.userNav">
+                    <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
 
                 </li>
 
 
-                <li data-ng-cloak data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
+                <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
                     <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
                 </li>
-                <li data-ng-cloak data-ng-if="nav.userNav" class="pure-menu-item">
+                <li data-ng-if="nav.userNav" class="pure-menu-item">
                     <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
                 </li>
 
@@ -134,7 +141,6 @@
 </div>
 
 
-<script type="text/javascript" src="/static/library/ng/angular.js"></script>
 <script type="text/javascript" src="/static/library/ng/angular-cookies.js"></script>
 <script type="text/javascript" src="/static/library/ng/angular-resource.js"></script>
 <script type="text/javascript" src="/static/library/ng/angular-route.js"></script>
