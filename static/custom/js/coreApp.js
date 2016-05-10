@@ -180,12 +180,12 @@ coreApp
                     }
                     $scope.loading = {
                         isComplete: true}
-                    console.log(loading.isComplete)
+
 
                 }).catch(function () {
                         $scope.loading = {
                             isComplete: true}
-                        console.log(loading.isComplete)
+
                     })
             }
 

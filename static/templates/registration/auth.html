@@ -22,7 +22,11 @@
     {% if form.errors %}
     <div class="xbanner pure-u-1-1 background-error">Invalid Login</div>
     {%elif endSession%}
-    <div class="xbanner pure-u-1-1 background-primary">Goodbye</div>
+    <div class="xbanner pure-u-1-1 background-primary">Goodbye
+        <script type="text/javascript">setTimeout(function () {
+            window.location="/";
+        }, 3000);</script>
+    </div>
     {%elif user.id%}
     <div class="xbanner pure-u-1-1 background-success">Welcome {{user.first_name}}</div>
     {%else%}
@@ -38,6 +42,16 @@
             <div>Last Name: {{user.last_name}}</div>
         </div>
         {%endif%}
+
+        {%if endSession%}
+
+
+        <div class="xServices centerText ">Redirecting...</div>
+
+
+        {%endif%}
+
+
         {% if not user.id %}{%if not endSession%}
         <div class="loginFields">
             <form class="pure-form" method="post" action="/x/login/?next={{ next }}">
@@ -63,10 +77,6 @@
         {%endif%}
         {%endif%}
 
-        <div>
-
-
-        </div>
 
         <div class="footerLinks">
             <a href="/">Home</a>
