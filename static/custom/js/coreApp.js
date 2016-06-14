@@ -182,10 +182,13 @@ coreApp
                         isComplete: true}
 
 
+                },function () {
+                    console.log('there was an error and no user was found')
+                    $scope.loading = {
+                        isComplete: true}
                 }).catch(function () {
                         $scope.loading = {
                             isComplete: true}
-
                     })
             }
 

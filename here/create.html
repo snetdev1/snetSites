@@ -1,90 +1,282 @@
 <style>
-    .createrMap {
-        height: 300px;
-        width: 100%;
-        display: block;
+@import "https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.css";
 
-    }
+.createrMap {
+    height: 150px;
+    width: 100%;
+    display: block;
 
-    .addressSearch {
-    }
+}
 
-    .custom-marker {
-        font-size: 2em;
-        padding: 10px;
-        background: #fff;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        border: #7F7F7F solid 1px;
-        text-align: center;
-    }
+.addressSearch {
+}
 
-    .custom-marker:after {
-        content: '';
-        position: absolute;
-        border-style: solid;
-        border-width: 7px 6px 0;
-        border-color: #fff transparent;
-        display: block;
-        width: 0;
-        z-index: 1;
-        margin-left: -6px;
-        bottom: -6px;
-        left: 50%;
-    }
+.custom-marker {
+    font-size: 2em;
+    padding: 10px;
+    background: #fff;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    border: #7F7F7F solid 1px;
+    text-align: center;
+}
 
-    .custom-marker:before {
-        content: '';
-        position: absolute;+
-        border-style: solid;
-        border-width: 7px 6px 0;
-        border-color: #7F7F7F transparent;
-        display: block;
-        width: 0;
-        z-index: 0;
-        margin-left: -6px;
-        bottom: -7px;
-        left: 50%;
-    }
+.custom-marker:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 7px 6px 0;
+    border-color: #fff transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-left: -6px;
+    bottom: -6px;
+    left: 50%;
+}
 
-    .selected {
-        background: yellow;
-    }
+.custom-marker:before {
+    content: '';
+    position: absolute;
++ border-style : solid;
+    border-width: 7px 6px 0;
+    border-color: #7F7F7F transparent;
+    display: block;
+    width: 0;
+    z-index: 0;
+    margin-left: -6px;
+    bottom: -7px;
+    left: 50%;
+}
 
-    div[ng-controller] {
-        position: relative;
-    }
+.selected {
+    background: yellow;
+}
 
-    #panel {
-        position: absolute;
-        top: 40px;
-        left: 50%;
-        margin-left: -180px;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-        display: none;
-    }
+div[ng-controller] {
+    position: relative;
+}
+
+#panel {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    margin-left: -180px;
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+    display: none;
+}
+
+.container {
+    margin: 60px auto;
+    width: 120px;
+}
+
+.switch {
+    position: relative;
+
+    height: 26px;
+    width: 120px;
+
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.switch-label {
+    position: relative;
+    z-index: 2;
+    float: left;
+    width: 58px;
+    line-height: 26px;
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+
+.switch-label:active {
+    font-weight: bold;
+}
+
+.switch-label-off {
+    padding-left: 2px;
+}
+
+.switch-label-on {
+    padding-right: 2px;
+}
+
+    /*
+     * Note: using adjacent or general sibling selectors combined with
+     *       pseudo classes doesn't work in Safari 5.0 and Chrome 12.
+     *       See this article for more info and a potential fix:
+     *       http://css-tricks.com/webkit-sibling-bug/
+     */
+
+.switch-input {
+    display: none;
+}
+
+.switch-input:checked + .switch-label {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.65);
+    text-shadow: 0 1px rgba(255, 255, 255, 0.25);
+    -webkit-transition: 0.15s ease-out;
+    -moz-transition: 0.15s ease-out;
+    -o-transition: 0.15s ease-out;
+    transition: 0.15s ease-out;
+}
+
+.switch-input:checked + .switch-label-on ~ .switch-selection {
+    /* Note: left: 50% doesn't transition in WebKit */
+    left: 60px;
+}
+
+.switch-selection {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: 2px;
+    left: 2px;
+    width: 58px;
+    height: 22px;
+    background: #999;
+    border-radius: 3px;
+    background-image: -webkit-linear-gradient(top, #ddd, #ccc);
+    background-image: -moz-linear-gradient(top, #ddd, #ccc);
+    background-image: -o-linear-gradient(top, #ddd, #ccc);
+    background-image: linear-gradient(to bottom, #ddd, #ccc);
+    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.5), 0 0 2px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.5), 0 0 2px rgba(0, 0, 0, 0.2);
+    -webkit-transition: left 0.15s ease-out;
+    -moz-transition: left 0.15s ease-out;
+    -o-transition: left 0.15s ease-out;
+    transition: left 0.15s ease-out;
+}
+
+.switch-blue .switch-selection {
+    background: #3aa2d0;
+    background-image: -webkit-linear-gradient(top, #4fc9ee, #3aa2d0);
+    background-image: -moz-linear-gradient(top, #4fc9ee, #3aa2d0);
+    background-image: -o-linear-gradient(top, #4fc9ee, #3aa2d0);
+    background-image: linear-gradient(to bottom, #4fc9ee, #3aa2d0);
+}
+
+.switch-yellow .switch-selection {
+    background: #c4bb61;
+    background-image: -webkit-linear-gradient(top, #e0dd94, #c4bb61);
+    background-image: -moz-linear-gradient(top, #e0dd94, #c4bb61);
+    background-image: -o-linear-gradient(top, #e0dd94, #c4bb61);
+    background-image: linear-gradient(to bottom, #e0dd94, #c4bb61);
+}
+
+.returnToCurrentLocationButton {
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    margin: 1.25em 0em;
+}
+
+.mapBlocker {
+    background-color: red;
+    height: 150px;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    z-index: 1;
+    opacity: 0;
+    cursor: not-allowed;
+}
+
+.confirmLocationButton {
+
+    width: 100%;
+
+}
+
+.confirmLocationButtonWrapper {
+    padding-top: 1em;
+}
 </style>
 
 <div class="pure-g">
     <div class="pure-u-1-12 "></div>
     <div class="pure-u-5-6 ">
-        <div ng-controller="MyCtrl as vm">
 
 
-            <div id="panel">
-                <!--<input ng-click="vm.hideMarkers()" type=button value="Hide Markers">-->
-                <!--<input ng-click="vm.showMarkers()" type=button value="Show All Markers">-->
+        <form class="pure-form pure-form-stacked" ng-controller="MyCtrl as vm">
+            <fieldset>
+                <h2 style="padding: .5em 0em;">Create New Party</h2>
 
-            </div>
-            <ng-map class="createrMap" center="{{address}}" zoom="16" on-click="vm.addMarker()">
-                <marker ng-repeat="pos in vm.positions" position="{{pos}}"></marker>
-            </ng-map>
-             <input ng-model="address" /><input ng-click="vm.findMe()" class="pure-button" type=button value="Use Current Location">
-        </div>
+                <label for="name" class="hidden">Name</label>
+                <input id="name" placeholder="Name">
+
+
+                <div class="pure-g" style="padding-top: .5em;">
+                    <div class="pure-u-1-4 pure-u-md-1-8 pure-u-lg-1-12 ">
+                        <div style="padding-top: .25em; color: darkgray;">Location</div>
+                    </div>
+                    <div class="pure-u-1-4">
+                        <div class="switch">
+                            <input ng-click="vm.findLocationBy('auto')" type="radio" ng-model="useAutoLocation.status"
+                                   class="switch-input" name="view2"
+                                   value="auto"
+                                   id="week2" checked>
+                            <label for="week2" class="switch-label switch-label-off">auto</label>
+                            <input ng-click="vm.findLocationBy('map')" type="radio" ng-model="useAutoLocation.status"
+                                   class="switch-input" name="view2"
+                                   ng-value="map" id="month2">
+                            <label for="month2" class="switch-label switch-label-on">map</label>
+                            <span class="switch-selection"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <section data-ng-hide="useAutoLocation.status=='auto'">
+                    <input style="width: 100%; color: darkgray" ng-model="address" placeholder="Search"/>
+
+                </section>
+
+                <section>
+                    <br>
+                    <ng-map class="createrMap" center="{{address}}" zoom="16"
+                            on-click="vm.addMarker()"
+                            geo-callback="vm.callbackFunc('you')"
+                            style="height:150px;">
+                        <marker ng-repeat="pos in vm.positions" position="{{pos}}"></marker>
+                        <div data-ng-show="useAutoLocation.status=='auto' || partyLocation.confirmed"
+                             class="mapBlocker"></div>
+                    </ng-map>
+
+
+                </section>
+                <div class="confirmLocationButtonWrapper" data-ng-show="vm.positions.length>0">
+                    <button class="pure-button pure-button-primary confirmLocationButton" ng-click="partyLocation.confirmed=true">Confirm Location</button>
+                </div>
+                <div class="returnToCurrentLocationButton" data-ng-hide="useAutoLocation.status=='auto'">
+
+                    <input class="returnToCurrentLocationButton" ng-click="vm.findMe()" readonly
+                           value="Return to current location">
+                </div>
+
+
+                <label for="remember" class="pure-checkbox">
+                    <input id="remember" type="checkbox"> Remember me
+                </label>
+                <label for="desc">Description</label>
+                <textarea id="desc" class="pure-input-1-2" placeholder="Textareas work too"></textarea>
+
+                <button type="submit" class="pure-button pure-button-primary">Sign in</button>
+            </fieldset>
+        </form>
+
+
     </div>
     <div class="pure-u-1-12"></div>
 </div>

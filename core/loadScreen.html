@@ -1,14 +1,18 @@
 <style>
+
     .loadScreen {
         height: 100%;
         width: 100%;
-        background-color: red;
-        z-index: 100;
+        background-image: url('/static/img/239.gif');
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: #ffffff;
+        z-index: 10000;
         position: absolute;
         top: 0px;
         left: 0px;
-        display: block;
+
     }
 </style>
 
-<div data-ng-hide="loading.isComplete" class='loadScreen'></div>
+<div class='loadScreen' data-ng-hide="loading.isComplete"></div>

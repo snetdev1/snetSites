@@ -157,28 +157,48 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
     }]).controller('createCtrl',function (NgMap) {
 
     }).controller('MyCtrl', function (NgMap, $scope) {
-        $scope.creating={
-            name:'Who are you?',
-            desc:'What are you doing?',
-            start:'1:00PM',
-            end:'4:00PM'
+        $scope.useAutoLocation = {
+            status: 'auto'
+        };
+        $scope.partyLocation={
+            confirmed:false
+        }
+        $scope.creating = {
+            name: 'Who are you?',
+            desc: 'What are you doing?',
+            start: '1:00PM',
+            end: '4:00PM'
         }
         var vm = this;
+
         vm.positions = ['current-location'];
-        $scope.address='current-location'
+        $scope.address = 'current-location'
+        NgMap.getMap().then(function (map) {
+            vm.map = map;
+        });
+        vm.callbackFunc = function (param) {
+            $scope.theLocation = vm.map.getCenter()
+            console.log('You are at' + $scope.theLocation);
+
+        };
 
         vm.addMarker = function (event) {
             vm.positions = [];
             var ll = event.latLng;
             vm.positions.push(ll.lat() + ", " + ll.lng());
-            console.log(vm.positions)
+            //console.log(vm.positions)
+            $scope.theLocation = "(" + ll.lat() + ", " + ll.lng() + ")"
+            console.log('You are at' + $scope.theLocation);
+
         }
         vm.deleteMarkers = function () {
             vm.positions = [];
         };
         vm.findMe = function () {
             vm.positions = ['current-location'];
-            $scope.address='current-location'
+            $scope.address = 'current-location'
+            $scope.theLocation = vm.map.getCenter()
+            console.log('You are at' + $scope.theLocation);
         };
         vm.showMarkers = function () {
             for (var key in vm.map.markers) {
@@ -192,6 +212,17 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
             }
             ;
         };
+        vm.findLocationBy = function (newStatus) {
+            if (newStatus == "map") {
+                $scope.address = ''
+                vm.positions = [];
+            }
+            if (newStatus == "auto") {
+                $scope.address = 'current-location'
+                vm.positions = ['current-location'];
+            }
+            console.log('Find location by: : ' + newStatus)
+        }
 
     });
 

@@ -7,22 +7,46 @@
 </head>
 <body>
 <style>
-    .temp1 {
-        font-size: 12px;
+
+
+    table {
+        border-collapse: collapse;
+
     }
+
+    table, td, th {
+
+    }
+
+    th, td {
+        border-bottom: 1px solid #ddd;
+        padding: 0.25em;
+        font-size: 12px;
+        color: #999;
+        font-family: sans-serif;
+    }
+
+    .temp1 {
+        color: #000;
+    }
+
 </style>
 
-<table style="color: red;">
+<table style="" cell>
     {% if u %}
     <tr>
-        <td class="temp1">user ID:</td>
-        <td class="temp1">{{u.id}}</td>
+        <td class="temp1">user ID</td>
+        <td class="">{{u.id}}</td>
+    </tr>
+    <tr>
+        <td class="temp1 ">First Name</td>
+        <td class=" ">{{u.first_name}}</td>
     </tr>
     {%endif%}{%if metaData%}
     {% for itemName, itemDetail in metaData %}
     <tr>
         <td class="temp1">{{itemName}}</td>
-        <td class="temp1">{{itemDetail}}</td>
+        <td class="">{{itemDetail}}</td>
     </tr>
     {%endfor%}{%endif%}
 </table>
