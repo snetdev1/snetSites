@@ -1,12 +1,14 @@
 
 <map class="finderMap" center='current-position'
     geo-fallback-center="[40.74, -74.18]"
-    geo-callback="vm.callbackFunc('you')"><info-window position="current-location">
+    geo-callback="fm.callbackFunc('you')"><info-window data-ng-if="finderMap.status" position="current-location">
       <span>You Are Here</span>
     </info-window></map>
 
         <div class="pure-g">
     <div class="pure-u-1-1">
         <form class="pure-form"><input type="text" class="searchInput" placeholder="Search Hidden Spots"></form>
+        <br>
+        <a href="#/" class="cancelFind">cancel</a>
     </div>
 </div>

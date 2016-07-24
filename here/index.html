@@ -38,15 +38,36 @@
 </head>
 <body data-ng-app="coreApp">
 
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: fbAppID,
+            xfbml: true,
+            version: 'v2.5'
+        });
+    };
 
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
 <div id="main" data-ng-view="">
 </div>
 
+<script type="text/javascript" src="/static/custom/js/coreConfig.js"></script>
 
 <script type="text/javascript" src="static/library/ng/angular.js"></script>
 <script type="text/javascript" src="static/library/ng/angular-cookies.js"></script>
 <script type="text/javascript" src="static/library/ng/angular-resource.js"></script>
 <script type="text/javascript" src="static/library/ng/angular-route.js"></script>
+<script type="text/javascript" src="static/library/ng/restangular.js"></script>
 <script type="text/javascript" src="static/library/ngStorage.js"></script>
 <script type="text/javascript" src="static/library/lodash.js"></script>
 <script type="text/javascript" src="static/library/underscore-min.js"></script>

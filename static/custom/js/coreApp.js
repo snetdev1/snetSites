@@ -1,3 +1,25 @@
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 var currentUser = false
 
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'restangular'], function ($httpProvider) {
@@ -143,7 +165,7 @@ coreApp
     .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
         'Facebook',
         function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
-
+            setCookie('uas', false, 0)
 
             var fullPath = $location.path();
             $scope.urlPath = {
@@ -160,12 +182,12 @@ coreApp
             });
             $scope.getUserDetails = function () {
                 var nUser = userDetails.query();
-                console.log("trying to get user data from" + 'https://' + $location.host() + '/x/u: NAVCTRL!!')
+
                 nUser.$promise.then(function (data) {
 
                     console.log("from navCtrl: " + data)
 
-                    if (data != "False") {
+                    if (data[0].user != "False") {
                         $scope.u = data
                         $scope.nav = {userNav: data[0].fields.first_name};
                         $scope.navItems = {
@@ -174,9 +196,11 @@ coreApp
                             logout: 'Logout'
 
                         }
+                        setCookie('uas', true, 7)
 
                     } else {
                         $scope.u = false
+                        setCookie('uas', false, 0)
                     }
                     $scope.loading = {
                         isComplete: true}
@@ -213,7 +237,12 @@ coreApp
                     });
                 });
             }
-            $scope.getUserDetails()
+            console.log(document.cookie)
+            if (getCookie('uas')) {
+                console.log("uas cookie is "+getCookie('uas'))
+            }else{
+                $scope.getUserDetails()
+            }
 
 
         }])

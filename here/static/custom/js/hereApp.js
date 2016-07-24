@@ -1,4 +1,26 @@
-var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'ngMap'], function ($httpProvider) {
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'ngMap', 'restangular'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
@@ -97,24 +119,77 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
     //SET CSRF TOKEN WHEN MODULE RUNS; THIS IS REQUIRED TO POST FORM DATA; ELSE SERVICE RETURNS 403
     //COOKIE CSRF TOKEN PROVIDED BY VALID LOGIN PAGE AUTHENTICATION AND EXPIRES WHEN BROWSER CLOSES
 
-    .run(function ($http, $cookies) {
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    .run(function ($rootScope, $location, $http, $cookies) {
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        $rootScope.$watch(function () {
+                return $location.path();
+            },
+            function (a) {
 
+                fullPath = $location.path();
+
+            });
     });
 
 
 coreApp
-    .factory('simpleSearch', function ($resource) {
-        return $resource('/data/vote/voter/search/:lastName/:firstName/', {
-            'query': {method: 'GET', isArray: false},
-            'get': {method: 'get', isArray: false}
+    .factory('userDetails', function ($resource, $location) {
+        return $resource('/x/u', {
+            'query': {method: 'GET', isArray: false }
         });
-
-
     })
+    .factory('Facebook',
+        ["$q", "$window", "$rootScope",
+            function ($q, $window, $rootScope) {
+
+                // since we are resolving a thirdparty response,
+                // we need to do so in $apply
+                var resolve = function (errval, retval, deferred) {
+                    $rootScope.$apply(function () {
+                        if (errval) {
+                            deferred.reject(errval);
+                        } else {
+                            retval.connected = true;
+                            deferred.resolve(retval);
+                        }
+                    });
+                }
+
+                var _login = function () {
+                    var deferred = $q.defer();
+                    //first check if we already have logged in
+                    FB.getLoginStatus(function (response) {
+                        if (response.status === 'connected') {
+                            // the user is logged in and has authenticated your
+                            // app
+                            console.log("fb user already logged in");
+                            deferred.resolve(response);
+                        } else {
+                            // the user is logged in to Facebook,
+                            // but has not authenticated your app
+                            FB.login(function (response) {
+                                if (response.authResponse) {
+                                    console.log("fb user logged in");
+                                    resolve(null, response, deferred);
+                                } else {
+                                    console.log("fb user could not log in");
+                                    resolve(response.error, null, deferred);
+                                }
+                            });
+                        }
+                    });
+
+                    return deferred.promise;
+                }
+
+                return{
+                    login: _login
+                };
+            }])
     .factory('latLngAddressLookup', function ($resource) {
         return $resource('https://maps.googleapis.com/maps/api/geocode/json?latlng=:latLng')
     });
+
 
 coreApp.controller('basicCtrl', ['$scope', function ($scope) {
 
@@ -136,32 +211,125 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         };
 
 
-    }]).controller('findCtrl', ['$scope', '$routeParams', function ($scope, $routeParams) {
+    }]).controller('findCtrl', ['$scope', '$routeParams', '$rootScope', function ($scope, $routeParams, $rootScope) {
+        $rootScope.finderMap = {status: true}
         $scope.messages = {
             welcome: "Welcome to the search page"
         };
-        var vm = this;
-        vm.message = 'You can not hide. :)';
-        vm.callbackFunc = function (param) {
+        var fm = this;
+        fm.message = 'You can not hide. :)';
+        fm.callbackFunc = function (param) {
             console.log('I know where ' + param + ' are. ' + vm.message);
             console.log('You are at' + vm.map.getCenter());
         };
 
 
-    }]).controller('homeCtrl', ['$scope', '$routeParams', function ($scope, $routeParams) {
-        $scope.messages = {
-            welcome: "Welcome to the test"
-        };
+    }]).controller('homeCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
+        'Facebook',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
+            $scope.messages = {
+                welcome: "Welcome to the test"
+            };
+            console.log(document.cookie)
 
 
-    }]).controller('createCtrl',function (NgMap) {
+            getCookie('csrftoken')
+            $scope.getUserDetails = function (next) {
+                var nUser = userDetails.query();
 
-    }).controller('MyCtrl', function (NgMap, $scope) {
+                nUser.$promise.then(function (data) {
+
+
+                    if (data[0].user != "False") {
+                        $scope.u = data
+                        $scope.userIsActive = data[0].fields.is_active
+                        if (next != false){
+                            $location.path(next)
+                        }
+
+                    } else {
+                        $scope.u = false
+                    }
+                    $scope.loading = {
+                        isComplete: true}
+
+
+                },function () {
+                    console.log('there was an error and no user was found')
+                    $scope.loading = {
+                        isComplete: true}
+                }).catch(function () {
+                        $scope.loading = {
+                            isComplete: true}
+                    })
+            }
+
+
+            $scope.login_fb = function (next) {
+                $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+                Facebook.login().then(function (response) {
+
+                    var reqObj = {"access_token": response.authResponse.accessToken,
+                        "backend": "facebook"};
+                    var u_b = Restangular.all('/x/sociallogin/');
+
+                    u_b.post(reqObj).then(function (response) {
+                        //$location.path('/');
+                        $scope.getUserDetails(next)
+
+                    }, function (response) { /*error*/
+                        console.log("There was an error", response);
+                        //deal with error here.
+                    });
+                });
+            }
+            $scope.getUserDetails(false)
+
+        }])
+
+
+    .controller('createCtrl', ['NgMap', '$scope', '$rootScope', 'userDetails', '$location', function (NgMap, $scope, $rootScope, userDetails, $location) {
+
+        $rootScope.finderMap = {status: false}
+        $scope.getUserDetails = function () {
+            var nUser = userDetails.query();
+
+            nUser.$promise.then(function (data) {
+
+
+                if (data[0].user != "False") {
+
+
+                } else {
+                    $scope.u = false
+
+
+                }
+                $scope.loading = {
+                    isComplete: true}
+
+
+            },function () {
+                console.log('ERROR: there was an error and no user was found. Returning to Here Home')
+                $scope.loading = {
+                    isComplete: true}
+                $location.path('/')
+            }).catch(function () {
+                    $scope.loading = {
+                        isComplete: true}
+
+                })
+        }
+        $scope.getUserDetails();
+    }])
+
+
+    .controller('MyCtrl', function (NgMap, $scope) {
         $scope.useAutoLocation = {
             status: 'auto'
         };
-        $scope.partyLocation={
-            confirmed:false
+        $scope.partyLocation = {
+            confirmed: false
         }
         $scope.creating = {
             name: 'Who are you?',
@@ -187,6 +355,7 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
             var ll = event.latLng;
             vm.positions.push(ll.lat() + ", " + ll.lng());
             //console.log(vm.positions)
+            $scope.address = ''
             $scope.theLocation = "(" + ll.lat() + ", " + ll.lng() + ")"
             console.log('You are at' + $scope.theLocation);
 
@@ -195,10 +364,10 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
             vm.positions = [];
         };
         vm.findMe = function () {
-            vm.positions = ['current-location'];
+            //vm.positions = ['current-location'];
+            vm.positions = [];
             $scope.address = 'current-location'
-            $scope.theLocation = vm.map.getCenter()
-            console.log('You are at' + $scope.theLocation);
+
         };
         vm.showMarkers = function () {
             for (var key in vm.map.markers) {

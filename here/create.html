@@ -176,10 +176,18 @@ div[ng-controller] {
 }
 
 .returnToCurrentLocationButton {
-    width: 100%;
-    text-align: center;
+
+}
+
+.returnToCurrentLocationButtonWrapper {
+    position: relative;
+    top: 6px;
+    z-index: 1;
+    font-size: 10px;
+    line-height: 0px;
+    left: 2px;
+    text-decoration: underline;
     cursor: pointer;
-    margin: 1.25em 0em;
 }
 
 .mapBlocker {
@@ -196,14 +204,70 @@ div[ng-controller] {
 .confirmLocationButton {
 
     width: 100%;
+    color: #fff;
 
 }
 
 .confirmLocationButtonWrapper {
+    padding-top: .75em;
+}
+
+.confirmedLocationWrapper {
+
+    color: #999;
     padding-top: 1em;
+    font-size: .75em;
+
+}
+
+.resetPartyLocation {
+    color: rgb(0, 120, 231);
+    text-decoration: underline;
+    float: right;
+    cursor: pointer;
+}
+
+.cancelCreate {
+    font-size: 8px;
+    float: right;
+    color: #ccc;
+}
+
+.partyStartInput {
+    width: 100%;
+    color: darkgray;
+
+}
+
+.partyStartInputWrapper {
+    margin-top: 12px;
+}
+
+.formLabel {
+    padding-top: .25em;
+    color: darkgray;
+}
+
+.lengthFormLabel {
+    padding-top: 8px;
+    color: darkgray;
+}
+
+.loadScreen {
+    height: 100%;
+    width: 100%;
+    background-image: url('/static/img/239.gif');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #ffffff;
+    z-index: 10000;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
 }
 </style>
-
+<div class='loadScreen' data-ng-hide="loading.isComplete"></div>
 <div class="pure-g">
     <div class="pure-u-1-12 "></div>
     <div class="pure-u-5-6 ">
@@ -211,15 +275,26 @@ div[ng-controller] {
 
         <form class="pure-form pure-form-stacked" ng-controller="MyCtrl as vm">
             <fieldset>
-                <h2 style="padding: .5em 0em;">Create New Party</h2>
+                <h2 style="padding: .5em 0em;">New Party<a href="#/" class="cancelCreate">cancel</a></h2>
 
                 <label for="name" class="hidden">Name</label>
-                <input id="name" placeholder="Name">
+                <input id="name" style="width: 100%;" placeholder="Name">
+                <label style="padding-top: .25em; color: darkgray;" class="hidden" for="desc">Description</label>
+                <textarea style="width: 100%; margin-top: 1em;     margin-bottom: 0em;" id="desc"
+                          placeholder="Description"></textarea>
+
+                <div class="partyStartInputWrapper">
+                    <label class="formLabel" for="startTime">Start Date and Time</label>
+                    <input id="startTime" class="partyStartInput" type="datetime-local" style="margin-top: .75em;">
 
 
-                <div class="pure-g" style="padding-top: .5em;">
+                    <label class="lengthFormLabel" for="partyLength">Duration in Hours
+                        <input id="partyLength" type="number" style="    margin-top: 12px;    width: 100%;" value="0"/></label>
+                </div>
+
+                <div data-ng-hide="partyLocation.confirmed" class="pure-g" style="padding-top: .75em;">
                     <div class="pure-u-1-4 pure-u-md-1-8 pure-u-lg-1-12 ">
-                        <div style="padding-top: .25em; color: darkgray;">Location</div>
+                        <div class="formLabel">Location</div>
                     </div>
                     <div class="pure-u-1-4">
                         <div class="switch">
@@ -231,48 +306,54 @@ div[ng-controller] {
                             <input ng-click="vm.findLocationBy('map')" type="radio" ng-model="useAutoLocation.status"
                                    class="switch-input" name="view2"
                                    ng-value="map" id="month2">
-                            <label for="month2" class="switch-label switch-label-on">map</label>
+                            <label for="month2" class="switch-label switch-label-on">search</label>
                             <span class="switch-selection"></span>
                         </div>
                     </div>
                 </div>
 
 
-                <section data-ng-hide="useAutoLocation.status=='auto'">
-                    <input style="width: 100%; color: darkgray" ng-model="address" placeholder="Search"/>
+                <section data-ng-hide="useAutoLocation.status=='auto'|| partyLocation.confirmed">
+                    <input style="width: 100%; color: darkgray;     margin: 10px 0px 0px 0px;" ng-model="address"
+                           placeholder="Search"/>
 
                 </section>
 
-                <section>
-                    <br>
+                <section style="    margin-top: .5em;">
+
                     <ng-map class="createrMap" center="{{address}}" zoom="16"
+                            map-type-control="true"
+                            map-type-control-options="{style:'DROPDOWN_MENU', position:'TOP_RIGHT'}"
                             on-click="vm.addMarker()"
                             geo-callback="vm.callbackFunc('you')"
                             style="height:150px;">
                         <marker ng-repeat="pos in vm.positions" position="{{pos}}"></marker>
                         <div data-ng-show="useAutoLocation.status=='auto' || partyLocation.confirmed"
                              class="mapBlocker"></div>
+                        <div class="returnToCurrentLocationButtonWrapper"
+                             data-ng-hide="useAutoLocation.status=='auto' || partyLocation.confirmed                ">
+
+                            <div class="returnToCurrentLocationButton" ng-click="vm.findMe()" readonly>Recenter Map
+                            </div>
+                        </div>
                     </ng-map>
 
 
                 </section>
+                <div class="confirmedLocationWrapper" data-ng-show="partyLocation.confirmed">
+                    <span ng-repeat="pos in vm.positions">{{pos}}</span><span
+                        data-ng-click="partyLocation.confirmed=false; vm.findMe();useAutoLocation.status='auto'; vm.positions=['current-location']"
+                        class="resetPartyLocation">reset</span>
+                </div>
                 <div class="confirmLocationButtonWrapper" data-ng-show="vm.positions.length>0">
-                    <button class="pure-button pure-button-primary confirmLocationButton" ng-click="partyLocation.confirmed=true">Confirm Location</button>
+                    <button class="pure-button  confirmLocationButton background-secondary"
+                            data-ng-hide="partyLocation.confirmed"
+                            ng-click="partyLocation.confirmed=true">
+                        Confirm Location
+                    </button>
                 </div>
-                <div class="returnToCurrentLocationButton" data-ng-hide="useAutoLocation.status=='auto'">
-
-                    <input class="returnToCurrentLocationButton" ng-click="vm.findMe()" readonly
-                           value="Return to current location">
-                </div>
 
 
-                <label for="remember" class="pure-checkbox">
-                    <input id="remember" type="checkbox"> Remember me
-                </label>
-                <label for="desc">Description</label>
-                <textarea id="desc" class="pure-input-1-2" placeholder="Textareas work too"></textarea>
-
-                <button type="submit" class="pure-button pure-button-primary">Sign in</button>
             </fieldset>
         </form>
 
