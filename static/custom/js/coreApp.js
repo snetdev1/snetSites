@@ -163,7 +163,7 @@ coreApp
     .service('messageService', ['$resource', function ($resource) {
 
         return $resource(
-            'https://slick.local:3299/x/core/content',
+            '/x/core/content',
             {format: 'json'},
             { 'query': {method: 'GET', isArray: true} })
 
