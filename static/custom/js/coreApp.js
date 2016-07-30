@@ -21,6 +21,7 @@ function getCookie(cname) {
 }
 
 var currentUser = false
+var globalMessages = false
 
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'restangular'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
@@ -73,7 +74,7 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
             $routeProvider.
                 when('/', {
                     templateUrl: 'core/home.html',
-                    controller: 'contentCtrl'
+                    controller: 'homeCtrl'
                 }).when('/about', {
                     templateUrl: 'core/about.html',
                     controller: 'aboutCtrl'
@@ -90,7 +91,7 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
                 return $location.path();
             },
             function (a) {
-                console.log('url has changed: ' + a);
+                //  console.log('url has changed: ' + a);
                 fullPath = $location.path();
 
             });
@@ -102,6 +103,12 @@ coreApp
         return $resource('/x/u', {
             'query': {method: 'GET', isArray: false }
         });
+    })
+    .factory('corecms', function ($resource) {
+        return $resource(
+            'https://slick.local:3299/x/core/content',
+            {format: 'json'},
+            { 'query': {method: 'GET', isArray: true} })
     })
     .factory('Facebook',
         ["$q", "$window", "$rootScope",
@@ -153,6 +160,39 @@ coreApp
             }]);
 
 coreApp
+    .service('messageService', ['$resource', function ($resource) {
+
+        return $resource(
+            'https://slick.local:3299/x/core/content',
+            {format: 'json'},
+            { 'query': {method: 'GET', isArray: true} })
+
+
+    }])
+    .service('getAllMessages', ['$rootScope', 'messageService', function ($rootScope, messageService) {
+
+        var incomingMessages
+        if (globalMessages == false) {
+            var content = messageService.query();
+            content.$promise.then(function (data) {
+
+
+                globalMessages = data
+                incomingMessages = data
+                console.log(data)
+                $rootScope.$broadcast('myEvent', data);
+
+
+            })
+        }
+        this.getEm = function () {
+
+            return incomingMessages
+        }
+    }])
+
+
+coreApp
     .controller('templateCtrl', ['$scope', function ($scope) {
         $scope.templates =
             [
@@ -163,8 +203,9 @@ coreApp
     }])
 
     .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
-        'Facebook',
-        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
+        'Facebook', 'getAllMessages',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, getAllMessages) {
+
             setCookie('uas', false, 0)
 
             var fullPath = $location.path();
@@ -180,12 +221,13 @@ coreApp
                 }
 
             });
+            $scope.messages = getAllMessages.getEm()
             $scope.getUserDetails = function () {
                 var nUser = userDetails.query();
 
                 nUser.$promise.then(function (data) {
 
-                    console.log("from navCtrl: " + data)
+                    //console.log("from navCtrl: " + data)
 
                     if (data[0].user != "False") {
                         $scope.u = data
@@ -237,23 +279,18 @@ coreApp
                     });
                 });
             }
-            console.log(document.cookie)
+            //  console.log(document.cookie)
             if (getCookie('uas')) {
-                console.log("uas cookie is "+getCookie('uas'))
-            }else{
+                console.log("uas cookie is " + getCookie('uas'))
+            } else {
                 $scope.getUserDetails()
             }
 
 
         }])
-    .controller('aboutCtrl', ['$scope', '$location', 'userDetails', function ($scope, $location, userDetails) {
-        $scope.messages = {
-            home: "wannabe",
-            about: "This Site",
-            two: "Who knows Latin? Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            aboutSubOne: "A message from testApp.js"
+    .controller('aboutCtrl', ['$scope', '$location', 'userDetails', 'messageService', 'getAllMessages', function ($scope, $location, userDetails, messageService, getAllMessages) {
 
-        };
+
         $scope.tryToGetUserData = function () {
             $scope.currentUser2 = {
                 u: "Please Authenticate"
@@ -277,18 +314,37 @@ coreApp
             })
         }
 
+        /** $scope.getAllContent = function () {
+            if (globalMessages == false) {
+                var content = messageService.query();
+                content.$promise.then(function (data) {
+
+                    $scope.messages = data
+                    globalMessages = $scope.messages
+
+                })
+            } else {
+                $scope.messages = globalMessages
+            }
+        }
+         $scope.getAllContent()**/
+            $scope.messages = getAllMessages.getEm()
+        $scope.$on('myEvent', function (even, data) {
+            $scope.messages = globalMessages
+
+
+        })
+
     }])
-    .controller('contentCtrl', ['$scope', '$location', '$routeParams', function ($scope, $location, $routeParams) {
+    .controller('homeCtrl', ['$scope', '$location', '$routeParams', 'corecms', 'messageService', 'getAllMessages',
+        function ($scope, $location, $routeParams, corecms, messageService, getAllMessages) {
+            $scope.messages = getAllMessages.getEm()
+            $scope.$on('myEvent', function (even, data) {
+                $scope.messages = globalMessages
 
 
-        $scope.messages = {
-            home: "wannabe",
-            about: "coming soon",
-            two: "Who knows Latin? Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            aboutSubOne: "A message from testApp.js"
-
-        };
+            })
 
 
-    }]);
+        }]);
 

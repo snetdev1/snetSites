@@ -30,9 +30,10 @@
         }
 
         .fbLoginLogo {
-            height: 19px;
+            height: 16px;
             opacity: 0.7;
-            vertical-align: middle;
+            vertical-align: top;
+            padding-left: 4px;
         }
 
         .loadScreen {
@@ -46,7 +47,6 @@
             position: absolute;
             top: 0px;
             left: 0px;
-
 
         }
     </style>
@@ -74,75 +74,78 @@
     }(document, 'script', 'facebook-jssdk'));
 </script>
 <section data-ng-controller="navCtrl">
-    <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
+    <section>
+        <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
+    </section>
+    <div id="layout">
+        <!-- Menu toggle -->
+        <a href="#menu" id="menuLink" class="menu-link">
+            <!-- Hamburger icon -->
+            <span></span>
+        </a>
+
+        <div id="menu">
+
+            <div class="pure-menu">
+
+                <a class="pure-menu-heading " href="#/">pes.net</a>
+
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item">
+                        <a href="#/" class="pure-menu-link"
+                           data-ng-class="{pureMenuSelected:urlPath.navPath==''}">Home</a>
+                    </li>
+                    <li class="pure-menu-item">
+                        <a href="#/about" class="pure-menu-link"
+                           data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}"> About</a>
+                    </li>
+
+                    <li class="hidden pure-menu-item">
+                        <a href="/here" class="pure-menu-link"> Here</a>
+                    </li>
+
+                    <li title="Requires popup window" data-ng-hide="nav.userNav" class="pure-menu-item" ng-click="login_fb()">
+                        <a class="pure-menu-link ">
+                            Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
+                        </a>
+                    </li>
+                    <li class="pure-menu-item " data-ng-if="nav.userNav">
+                        <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
+
+                    </li>
+
+
+                    <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
+                        <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
+                    </li>
+                    <li data-ng-if="nav.userNav" class="pure-menu-item">
+                        <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
+                    </li>
+
+                    <!--<li data-ng-if=" nav.userNav" class="pure-menu-item">
+                        <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
+
+                </ul>
+
+
+            </div>
+
+        </div>
+
+        <div id="main" data-ng-view="">
+
+        </div>
+        <footer class="content">
+            <div
+                    class="fb-like"
+                    data-share="true"
+                    data-width="320"
+                    data-show-faces="false">
+
+            </div>
+        </footer>
+    </div>
 </section>
-<div id="layout">
-    <!-- Menu toggle -->
-    <a href="#menu" id="menuLink" class="menu-link">
-        <!-- Hamburger icon -->
-        <span></span>
-    </a>
-
-    <div id="menu">
-
-        <div class="pure-menu" data-ng-controller="navCtrl">
-
-            <a class="pure-menu-heading " href="#/">pes.net</a>
-
-            <ul class="pure-menu-list">
-                <li class="pure-menu-item">
-                    <a href="#/" class="pure-menu-link" data-ng-class="{pureMenuSelected:urlPath.navPath==''}">Home</a>
-                </li>
-                <li class="pure-menu-item">
-                    <a href="#/about" class="pure-menu-link"
-                       data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}"> About</a>
-                </li>
-
-                <li class="pure-menu-item">
-                    <a href="/here" class="pure-menu-link"> Here</a>
-                </li>
-
-                <li data-ng-hide="nav.userNav" class="pure-menu-item" ng-click="login_fb()">
-                    <a class="pure-menu-link ">
-                        Login <img class="fbLoginLogo" src="/static/img/fbLogoWhite.png">
-                    </a>
-                </li>
-                <li class="pure-menu-item " data-ng-if="nav.userNav">
-                    <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
-
-                </li>
-
-
-                <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
-                    <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
-                </li>
-                <li data-ng-if="nav.userNav" class="pure-menu-item">
-                    <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
-                </li>
-
-                <!--<li data-ng-if=" nav.userNav" class="pure-menu-item">
-                    <a href="/x/admin/auth/user/{{u[0].pk}}/" class="pure-menu-link">{{nav.userNav}}</a></li>-->
-
-            </ul>
-
-
-        </div>
-
-    </div>
-
-    <div id="main" data-ng-view="">
-
-    </div>
-    <footer class="content">
-        <div
-                class="fb-like"
-                data-share="true"
-                data-width="320"
-                data-show-faces="false">
-
-        </div>
-    </footer>
-</div>
 
 
 <script type="text/javascript" src="/static/library/ng/angular-cookies.js"></script>
