@@ -281,7 +281,7 @@ coreApp
             }
             //  console.log(document.cookie)
             if (getCookie('uas')) {
-                console.log("uas cookie is " + getCookie('uas'))
+                //console.log("uas cookie is " + getCookie('uas'))
             } else {
                 $scope.getUserDetails()
             }
@@ -300,7 +300,7 @@ coreApp
 
             nUser.$promise.then(function (data) {
 
-                console.log("from homeCtrl: " + data)
+                //console.log("from homeCtrl: " + data)
 
                 if (data != "False") {
                     $scope.currentUser2 = {

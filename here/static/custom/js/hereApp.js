@@ -21,16 +21,17 @@ function getCookie(cname) {
 }
 
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'ngMap', 'restangular'], function ($httpProvider) {
+    console.log('starting')
     // Use x-www-form-urlencoded Content-Type
-    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+    //$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
     /**
      * The workhorse; converts an object to x-www-form-urlencoded serialization.
      * @param {Object} obj
      * @return {String}
-     */
 
-    var param = function (obj) {
+
+     var param = function (obj) {
         var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
 
         for (name in obj) {
@@ -60,15 +61,16 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
 
         return query.length ? query.substr(0, query.length - 1) : query;
     };
-    // Override $http service's default transformRequest
-    $httpProvider.defaults.transformRequest = [function (data) {
+     // Override $http service's default transformRequest
+     $httpProvider.defaults.transformRequest = [function (data) {
         return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
-    }];
+    }];*/
 })
 
 
     .config(['$routeProvider', '$httpProvider',
         function ($routeProvider, $httpProvider) {
+            console.log('configuring')
             $routeProvider.
 
                 when('/', {
@@ -120,6 +122,7 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
     //COOKIE CSRF TOKEN PROVIDED BY VALID LOGIN PAGE AUTHENTICATION AND EXPIRES WHEN BROWSER CLOSES
 
     .run(function ($rootScope, $location, $http, $cookies) {
+        console.log('running')
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.$watch(function () {
                 return $location.path();
@@ -138,6 +141,18 @@ coreApp
             'query': {method: 'GET', isArray: false }
         });
     })
+
+    .factory('partyPoster', function ($http) {
+        return{addNew: function (partyData) {
+            $http.post("/x/here/parties/", partyData)
+                .success(function (data) {
+                    console.log('success' + data)
+                }).error(function (data) {
+                    console.log('fail' + data)
+                });
+        }}
+    })
+
     .factory('Facebook',
         ["$q", "$window", "$rootScope",
             function ($q, $window, $rootScope) {
@@ -190,7 +205,20 @@ coreApp
         return $resource('https://maps.googleapis.com/maps/api/geocode/json?latlng=:latLng')
     });
 
+coreApp.service('loadingScreenService', ['$rootScope', function ($rootScope) {
+    var loadingCompleted = false
 
+    this.getStatus = function () {
+        return loadingCompleted
+    }
+
+    this.updateStatus = function (newStatus, $scope) {
+        loadingCompleted = newStatus
+        $rootScope.$broadcast('loadingStatusUpdate');
+        return loadingCompleted
+    }
+
+}])
 coreApp.controller('basicCtrl', ['$scope', function ($scope) {
 
         $scope.messages = {
@@ -224,13 +252,24 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         };
 
 
-    }]).controller('homeCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
-        'Facebook',
-        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook) {
-            $scope.messages = {
-                welcome: "Welcome to the test"
-            };
-            console.log(document.cookie)
+    }])
+    .controller('loadScreenCtrl', ['$scope', 'loadingScreenService', function ($scope, loadingScreenService) {
+
+
+        $scope.$on('loadingStatusUpdate', function (event) {
+            $scope.loading = {
+                isComplete: loadingScreenService.getStatus()
+            }
+            console.log('hi: ' + loadingScreenService.getStatus())
+        })
+
+        $scope.loading = {
+            isComplete: loadingScreenService.getStatus()
+        }
+    }])
+    .controller('homeCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
+        'Facebook', 'loadingScreenService',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, loadingScreenService) {
 
 
             getCookie('csrftoken')
@@ -238,34 +277,32 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
                 var nUser = userDetails.query();
 
                 nUser.$promise.then(function (data) {
-
-
                     if (data[0].user != "False") {
                         $scope.u = data
                         $scope.userIsActive = data[0].fields.is_active
-                        if (next != false){
+                        if (next != false) {
                             $location.path(next)
+                        } else {
+                            loadingScreenService.updateStatus(true)
                         }
 
                     } else {
                         $scope.u = false
+                        loadingScreenService.updateStatus(true)
                     }
-                    $scope.loading = {
-                        isComplete: true}
 
 
                 },function () {
                     console.log('there was an error and no user was found')
-                    $scope.loading = {
-                        isComplete: true}
+                    $loadingScreenService.updateStatus(true)
                 }).catch(function () {
-                        $scope.loading = {
-                            isComplete: true}
+                        loadingScreenService.updateStatus(true)
                     })
             }
 
 
             $scope.login_fb = function (next) {
+                loadingScreenService.updateStatus(false)
                 $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
                 Facebook.login().then(function (response) {
 
@@ -288,7 +325,23 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         }])
 
 
-    .controller('createCtrl', ['NgMap', '$scope', '$rootScope', 'userDetails', '$location', function (NgMap, $scope, $rootScope, userDetails, $location) {
+    .controller('createCtrl', ['NgMap', '$scope', '$rootScope', 'userDetails', '$location', 'partyPoster','loadingScreenService', function (NgMap, $scope, $rootScope, userDetails, $location, partyPoster, loadingScreenService) {
+        $scope.currentPartyInfo = {
+            "name": "",
+            "location": "",
+            "description": "",
+            "start": '',
+            "length": '',
+            "active": true,
+            "user": ''
+        }
+        $scope.addThisParty = function () {
+
+            partyPoster.addNew($scope.currentPartyInfo)
+            loadingScreenService.updateStatus(false)
+            $location.path('/')
+        }
+        console.log('controlling')
 
         $rootScope.finderMap = {status: false}
         $scope.getUserDetails = function () {
@@ -296,27 +349,21 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
 
             nUser.$promise.then(function (data) {
 
-
-                if (data[0].user != "False") {
-
+                console.log(data)
+                if (data[0].user == "False") {
+                    $location.path('/')
 
                 } else {
-                    $scope.u = false
-
+                    $scope.currentPartyInfo.user = 'https://slick.local:3299/x/api/users/' + data[0].pk + '/'
+                    loadingScreenService.updateStatus(true)
 
                 }
-                $scope.loading = {
-                    isComplete: true}
-
-
             },function () {
                 console.log('ERROR: there was an error and no user was found. Returning to Here Home')
-                $scope.loading = {
-                    isComplete: true}
+                loadingScreenService.updateStatus(true)
                 $location.path('/')
             }).catch(function () {
-                    $scope.loading = {
-                        isComplete: true}
+                    loadingScreenService.updateStatus(true)
 
                 })
         }
@@ -346,7 +393,22 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         });
         vm.callbackFunc = function (param) {
             $scope.theLocation = vm.map.getCenter()
-            console.log('You are at' + $scope.theLocation);
+            console.log('You are at: ' + $scope.theLocation);
+
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                console.log("Geolocation is not supported by this browser.")
+            }
+
+
+            function showPosition(position) {
+                //console.log(position.coords.latitude + "," + position.coords.longitude)
+
+                $scope.currentPartyInfo.location = "(" + position.coords.latitude + "," + position.coords.longitude + ")"
+            }
+
 
         };
 
@@ -357,6 +419,7 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
             //console.log(vm.positions)
             $scope.address = ''
             $scope.theLocation = "(" + ll.lat() + ", " + ll.lng() + ")"
+            $scope.currentPartyInfo.location = "(" + ll.lat() + ", " + ll.lng() + ")"
             console.log('You are at' + $scope.theLocation);
 
         }
