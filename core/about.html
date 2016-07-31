@@ -189,7 +189,7 @@
         <p>
             DNS is registered with GoDaddy. The web server is Apache2. It runs on my old MacBook. Apache interfaces with Python using WSGI to form the backbone of the backend. Interestingly (to some), you don't need the Python module in Apache to run this setup; WSGI is sufficient.
 <br><br>
-The Django library runs in a virtual env, summoned in daemon mode from the Apache config. MySQL serves database needs from a different old MacBook. The web API comes from Django REST Framework. I was originally serializing my own models, but have recently discovered the REST framework and now depend on it heavily.
+The Django library runs in a virtual env, summoned in daemon mode from the Apache config. MySQL serves database needs and the web API comes from Django REST Framework. I was originally serializing my own models, but have recently discovered the REST framework and now depend on it heavily.
 <br><br>
 AngularJS forms the front end and I like it for async data binding between the web application and API (I am aware now of a REST oriented module for Angular, but have not plugged it up yet). The responsive design is a slightly custom Pure CSS template. Occasionally, some ports on this server connect to real life Arduino machines.
 <br><br>
