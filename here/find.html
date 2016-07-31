@@ -1,5 +1,4 @@
-
-<map class="finderMap" center='current-position'
+<!--<map class="finderMap" center='current-position'
     geo-fallback-center="[40.74, -74.18]"
     geo-callback="fm.callbackFunc('you')"><info-window data-ng-if="finderMap.status" position="current-location">
       <span>You Are Here</span>
@@ -11,4 +10,6 @@
         <br>
         <a href="#/" class="cancelFind">cancel</a>
     </div>
-</div>
+</div>-->
+<div data-ng-model="myLocation">{{myLocation}}</div>
+<div ng-repeat="x in partyList">{{x.name}}</div>

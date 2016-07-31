@@ -39,7 +39,7 @@
         .loadScreen {
             height: 100%;
             width: 100%;
-            background-image: url('/static/img/239.gif');
+            background-image: url('/static/img/45.gif');
             background-repeat: no-repeat;
             background-position: center;
             background-color: #ffffff;
@@ -73,10 +73,11 @@
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 </script>
+<section data-ng-controller="loadScreenCtrl">
+    <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
+</section>
 <section data-ng-controller="navCtrl">
-    <section>
-        <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
-    </section>
+
     <div id="layout">
         <!-- Menu toggle -->
         <a href="#menu" id="menuLink" class="menu-link">
@@ -99,8 +100,10 @@
                         <a href="#/about" class="pure-menu-link"
                            data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}">About</a>
                     </li>
-
-                    <li class=" pure-menu-item">
+                    <li class=" pure-menu-item" title="GoPro camera a weather balloon!">
+                        <a href="#/spacebot" class="pure-menu-link">SpaceBot</a>
+                    </li>
+                    <li class=" pure-menu-item" title="Browse the source code">
                         <a href="https://github.com/snetdev1/" target="_blank" class="pure-menu-link">GitHub</a>
                     </li>
 

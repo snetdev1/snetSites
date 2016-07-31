@@ -25,59 +25,20 @@ var globalMessages = false
 
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'restangular'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
-    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
-    /**
-     * The workhorse; converts an object to x-www-form-urlencoded serialization.
-     * @param {Object} obj
-     * @return {String}
-     */
-
-    var param = function (obj) {
-        var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
-
-        for (name in obj) {
-            value = obj[name];
-
-            if (value instanceof Array) {
-                for (i = 0; i < value.length; ++i) {
-                    subValue = value[i];
-                    fullSubName = name + '[' + i + ']';
-                    innerObj = {};
-                    innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
-                }
-            }
-            else if (value instanceof Object) {
-                for (subName in value) {
-                    subValue = value[subName];
-                    fullSubName = name + '[' + subName + ']';
-                    innerObj = {};
-                    innerObj[fullSubName] = subValue;
-                    query += param(innerObj) + '&';
-                }
-            }
-            else if (value !== undefined && value !== null)
-                query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
-        }
-
-        return query.length ? query.substr(0, query.length - 1) : query;
-    };
-    // Override $http service's default transformRequest
-    $httpProvider.defaults.transformRequest = [function (data) {
-        return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
-    }];
 })
     .config(['$routeProvider',
         function ($routeProvider) {
             $routeProvider.
                 when('/', {
                     templateUrl: 'core/home.html',
-                    controller: 'homeCtrl'
+                    controller: 'coreCtrl'
                 }).when('/about', {
                     templateUrl: 'core/about.html',
                     controller: 'aboutCtrl'
+                }).when('/spacebot', {
+                    templateUrl: 'core/spacebot.html',
+                    controller: 'coreCtrl'
                 }).otherwise({
                     redirectTo: '/'
                 });
@@ -189,10 +150,37 @@ coreApp
 
             return incomingMessages
         }
-    }])
+    }]).service('loadingScreenService', ['$rootScope', function ($rootScope) {
+    var loadingCompleted = false
+
+    this.getStatus = function () {
+        return loadingCompleted
+    }
+
+    this.updateStatus = function (newStatus, $scope) {
+        loadingCompleted = newStatus
+        $rootScope.$broadcast('loadingStatusUpdate');
+        return loadingCompleted
+    }
+
+}])
 
 
 coreApp
+    .controller('loadScreenCtrl', ['$scope', 'loadingScreenService', function ($scope, loadingScreenService) {
+
+
+        $scope.$on('loadingStatusUpdate', function (event) {
+            $scope.loading = {
+                isComplete: loadingScreenService.getStatus()
+            }
+            console.log('hi: ' + loadingScreenService.getStatus())
+        })
+
+        $scope.loading = {
+            isComplete: loadingScreenService.getStatus()
+        }
+    }])
     .controller('templateCtrl', ['$scope', function ($scope) {
         $scope.templates =
             [
@@ -203,8 +191,8 @@ coreApp
     }])
 
     .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
-        'Facebook', 'getAllMessages',
-        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, getAllMessages) {
+        'Facebook', 'getAllMessages','loadingScreenService',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, getAllMessages,loadingScreenService) {
 
             setCookie('uas', false, 0)
 
@@ -238,23 +226,21 @@ coreApp
                             logout: 'Logout'
 
                         }
-                        setCookie('uas', true, 7)
+                        loadingScreenService.updateStatus(true)
 
                     } else {
                         $scope.u = false
                         setCookie('uas', false, 0)
+                        loadingScreenService.updateStatus(true)
                     }
-                    $scope.loading = {
-                        isComplete: true}
+
 
 
                 },function () {
                     console.log('there was an error and no user was found')
-                    $scope.loading = {
-                        isComplete: true}
+                    loadingScreenService.updateStatus(true)
                 }).catch(function () {
-                        $scope.loading = {
-                            isComplete: true}
+                        loadingScreenService.updateStatus(true)
                     })
             }
 
@@ -329,17 +315,17 @@ coreApp
         }
          $scope.getAllContent()**/
             $scope.messages = getAllMessages.getEm()
-        $scope.$on('myEvent', function (even, data) {
+        $scope.$on('myEvent', function (event, data) {
             $scope.messages = globalMessages
 
 
         })
 
     }])
-    .controller('homeCtrl', ['$scope', '$location', '$routeParams', 'corecms', 'messageService', 'getAllMessages',
+    .controller('coreCtrl', ['$scope', '$location', '$routeParams', 'corecms', 'messageService', 'getAllMessages',
         function ($scope, $location, $routeParams, corecms, messageService, getAllMessages) {
             $scope.messages = getAllMessages.getEm()
-            $scope.$on('myEvent', function (even, data) {
+            $scope.$on('myEvent', function (event, data) {
                 $scope.messages = globalMessages
 
 
@@ -347,4 +333,5 @@ coreApp
 
 
         }]);
+
 

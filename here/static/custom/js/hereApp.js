@@ -20,6 +20,9 @@ function getCookie(cname) {
     return "";
 }
 
+var allParties = false
+var myGlobalLocation = false
+
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'ngMap', 'restangular'], function ($httpProvider) {
     console.log('starting')
     // Use x-www-form-urlencoded Content-Type
@@ -206,19 +209,75 @@ coreApp
     });
 
 coreApp.service('loadingScreenService', ['$rootScope', function ($rootScope) {
-    var loadingCompleted = false
+        var loadingCompleted = false
 
-    this.getStatus = function () {
-        return loadingCompleted
-    }
+        this.getStatus = function () {
+            return loadingCompleted
+        }
 
-    this.updateStatus = function (newStatus, $scope) {
-        loadingCompleted = newStatus
-        $rootScope.$broadcast('loadingStatusUpdate');
-        return loadingCompleted
-    }
+        this.updateStatus = function (newStatus, $scope) {
+            loadingCompleted = newStatus
+            $rootScope.$broadcast('loadingStatusUpdate');
+            return loadingCompleted
+        }
 
-}])
+    }])
+
+
+    .service('partyService', ['$resource', function ($resource) {
+
+        return $resource(
+            '/x/here/parties',
+            {format: 'json'},
+            { 'query': {method: 'GET', isArray: true} })
+    }])
+    .service('getAllParties', ['$rootScope', 'partyService', function ($rootScope, partyService) {
+
+        var incomingParties
+        if (allParties == false) {
+            var content = partyService.query();
+            content.$promise.then(function (data) {
+
+
+                allParties = data
+                incomingParties = data
+                console.log(data)
+                $rootScope.$broadcast('partiesAreLoaded', data);
+
+
+            })
+        }
+        this.getEm = function () {
+
+            return incomingParties
+        }
+    }])
+
+    .service('locationService',['$rootScope', function ($rootScope) {
+        var currentLocation
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+
+        } else {
+            console.log("Geolocation is not supported by this browser.")
+            currentLocation = false
+        }
+
+
+        function showPosition(position) {
+            //console.log(position.coords.latitude + "," + position.coords.longitude)
+
+            currentLocation = "(" + position.coords.latitude + "," + position.coords.longitude + ")"
+
+            myGlobalLocation= "(" + position.coords.latitude + "," + position.coords.longitude + ")"
+               $rootScope.$broadcast('weFoundYourLocation',position);
+        }
+
+        this.getMyLocation = function () {
+            return currentLocation
+        }
+    }])
 coreApp.controller('basicCtrl', ['$scope', function ($scope) {
 
         $scope.messages = {
@@ -239,18 +298,21 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         };
 
 
-    }]).controller('findCtrl', ['$scope', '$routeParams', '$rootScope', function ($scope, $routeParams, $rootScope) {
-        $rootScope.finderMap = {status: true}
-        $scope.messages = {
-            welcome: "Welcome to the search page"
-        };
-        var fm = this;
-        fm.message = 'You can not hide. :)';
-        fm.callbackFunc = function (param) {
-            console.log('I know where ' + param + ' are. ' + vm.message);
-            console.log('You are at' + vm.map.getCenter());
-        };
+    }]).controller('findCtrl', ['$scope', '$routeParams', '$rootScope', 'getAllParties', 'loadingScreenService','locationService',
+        function ($scope, $routeParams, $rootScope, getAllParties, loadingScreenService, locationService) {
+        $scope.myLocation='Searching...'
+        $scope.$on('weFoundYourLocation', function(event, position){
+             console.log(position)
+            $scope.myLocation=position
+        })
 
+        loadingScreenService.updateStatus(true)
+        $scope.$on('partiesAreLoaded', function (event, data) {
+
+           $scope.partyList = getAllParties.getEm()
+
+
+        })
 
     }])
     .controller('loadScreenCtrl', ['$scope', 'loadingScreenService', function ($scope, loadingScreenService) {
@@ -260,7 +322,7 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
             $scope.loading = {
                 isComplete: loadingScreenService.getStatus()
             }
-            console.log('hi: ' + loadingScreenService.getStatus())
+
         })
 
         $scope.loading = {
@@ -325,7 +387,7 @@ coreApp.controller('basicCtrl', ['$scope', function ($scope) {
         }])
 
 
-    .controller('createCtrl', ['NgMap', '$scope', '$rootScope', 'userDetails', '$location', 'partyPoster','loadingScreenService', function (NgMap, $scope, $rootScope, userDetails, $location, partyPoster, loadingScreenService) {
+    .controller('createCtrl', ['NgMap', '$scope', '$rootScope', 'userDetails', '$location', 'partyPoster', 'loadingScreenService', function (NgMap, $scope, $rootScope, userDetails, $location, partyPoster, loadingScreenService) {
         $scope.currentPartyInfo = {
             "name": "",
             "location": "",
