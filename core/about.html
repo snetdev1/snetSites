@@ -11,14 +11,15 @@
         width: 64px;
         cursor: pointer;
     }
-    .hidePower{
-            font-size: .7em;
-    float: right;
-    padding-top: 48px;
-    color: rgb(0, 120, 231);
-    text-decoration: underline;
-    cursor: pointer;
-    padding-right: 48px;
+
+    .hidePower {
+        font-size: .7em;
+        float: right;
+        padding-top: 48px;
+        color: rgb(0, 120, 231);
+        text-decoration: underline;
+        cursor: pointer;
+        padding-right: 48px;
     }
 
     @media screen and (min-width: 35.5em) {
@@ -89,7 +90,7 @@
                 </div>
             </div>
         </section>
-   <div class="hidePower" data-ng-show="power.toShow" data-ng-click='power.toShow=false'>hide</div>
+        <div class="hidePower" data-ng-show="power.toShow" data-ng-click='power.toShow=false'>hide</div>
 
         <div data-ng-if="power.toShow=='osx'">
             <h2 class="content-subhead">OS X</h2>
@@ -198,15 +199,16 @@
             <h2 class="content-subhead">{{messages[5].description}}</h2>
 
             <p>
-                DNS is registered with GoDaddy. The web server is Apache2. It runs on my old MacBook. Apache interfaces
+                DNS is with GoDaddy. The web server is Apache2. It runs on my old MacBook. Apache interfaces
                 with Python using WSGI to form the backbone of the backend. Interestingly (to some), you don't need the
                 Python module in Apache to run this setup; WSGI is sufficient.
                 <br><br>
-                The Django library runs in a virtual env, summoned in daemon mode from the Apache config. MySQL serves
-                database needs and the web API comes from Django REST Framework. I originally serialized my own models,
+                The Django library runs in a virtual env, summoned from the Apache config. MySQL serves
+                database needs and the <a style="text-decoration: underline" href="/api">API</a> comes from Django REST
+                Framework. I originally serialized my own models,
                 but recently discovered the REST framework and now depend on it heavily.
                 <br><br>
-                AngularJS forms the front end and I like it for async data binding between the web application and API.
+                AngularJS forms the front end and I like it for async data binding between end web application and API.
                 The responsive design is a slightly custom Pure CSS template. Occasionally, some ports on this server
                 connect to real life Arduino machines.
 

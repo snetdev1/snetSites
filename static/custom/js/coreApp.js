@@ -27,10 +27,10 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
     // Use x-www-form-urlencoded Content-Type
 
 })
-    .config(['$routeProvider',
-        function ($routeProvider) {
+    .config(['$routeProvider','$locationProvider',
+        function ($routeProvider, $locationProvider) {
             $routeProvider.
-                when('/', {
+                when('/hello', {
                     templateUrl: 'core/home.html',
                     controller: 'coreCtrl'
                 }).when('/about', {
@@ -40,8 +40,9 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
                     templateUrl: 'core/spacebot.html',
                     controller: 'coreCtrl'
                 }).otherwise({
-                    redirectTo: '/'
+                    redirectTo: '/hello'
                 });
+            $locationProvider.html5Mode(true);
         }
     ])
 
