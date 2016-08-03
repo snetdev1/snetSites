@@ -33,22 +33,22 @@
     <link rel="stylesheet" href="static/custom/css/modules.css">
     <link rel="stylesheet" href="static/custom/css/presentation.css">
     <link rel="stylesheet" href="static/custom/css/layout.css">
-<style>
-    .loadScreen {
-    height: 100%;
-    width: 100%;
-    background-image: url('/static/img/45.gif');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: #ffffff;
-    z-index: 10000;
-    position: absolute;
-    top: 0px;
-    left: 0px;
+    <style>
+        .loadScreen {
+            height: 100%;
+            width: 100%;
+            background-image: url('/static/img/45.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #ffffff;
+            z-index: 10000;
+            position: absolute;
+            top: 0px;
+            left: 0px;
 
-}
-</style>
-
+        }
+    </style>
+    <!--<base href='/here'>-->
 </head>
 <body data-ng-app="coreApp">
 
@@ -72,7 +72,9 @@
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 </script>
-<div data-ng-controller="loadScreenCtrl" ><div class='loadScreen' data-ng-hide="loading.isComplete"></div></div>
+<div data-ng-controller="loadScreenCtrl">
+    <div class='loadScreen' data-ng-hide="loading.isComplete"></div>
+</div>
 <div id="main" data-ng-view="">
 </div>
 
@@ -87,10 +89,10 @@
 <script type="text/javascript" src="static/library/lodash.js"></script>
 <script type="text/javascript" src="static/library/underscore-min.js"></script>
 
-<script type="text/javascript" src="static/library/ng-map.min.js"></script>
+<script type="text/javascript" src="/here/static/library/ng-map.min.js"></script>
 
 
-<script type="text/javascript" src="static/custom/js/hereApp.js"></script>
+<script type="text/javascript" src="/here/static/custom/js/hereApp.js"></script>
 
 
 <script type="text/javascript"

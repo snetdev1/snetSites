@@ -22,27 +22,42 @@ function getCookie(cname) {
 
 var currentUser = false
 var globalMessages = false
+var globalUser = false
 
 var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', 'ngStorage', 'restangular'], function ($httpProvider) {
     // Use x-www-form-urlencoded Content-Type
 
 })
-    .config(['$routeProvider','$locationProvider',
+    .config(['$routeProvider', '$locationProvider',
         function ($routeProvider, $locationProvider) {
             $routeProvider.
-                when('/hello', {
-                    templateUrl: 'core/home.html',
+                when('/app/hello', {
+                    templateUrl: '/core/home.html',
                     controller: 'coreCtrl'
-                }).when('/about', {
-                    templateUrl: 'core/about.html',
+                }).when('/app/about', {
+                    templateUrl: '/core/about.html',
                     controller: 'aboutCtrl'
-                }).when('/spacebot', {
-                    templateUrl: 'core/spacebot.html',
+                }).when('/app/spacebot', {
+                    templateUrl: '/core/spacebot.html',
                     controller: 'coreCtrl'
                 }).otherwise({
-                    redirectTo: '/hello'
+                    redirectTo: '/app/hello'
                 });
-            $locationProvider.html5Mode(true);
+            /*if (window.history && window.history.pushState) {
+             //$locationProvider.html5Mode(true); will cause an error $location in HTML5 mode requires a  tag to be present! Unless you set baseUrl tag after head tag like so: <head> <base href="/">
+
+             // to know more about setting base URL visit: https://docs.angularjs.org/error/$location/nobase
+
+             // if you don't wish to set base URL then use this
+             $locationProvider.html5Mode({
+             enabled: true,
+             requireBase: false
+             });
+             }*/
+            $locationProvider.html5Mode({
+                enabled: true,
+                requireBase: false
+            });
         }
     ])
 
@@ -151,20 +166,55 @@ coreApp
 
             return incomingMessages
         }
-    }]).service('loadingScreenService', ['$rootScope', function ($rootScope) {
-    var loadingCompleted = false
+    }])
 
-    this.getStatus = function () {
-        return loadingCompleted
-    }
 
-    this.updateStatus = function (newStatus, $scope) {
-        loadingCompleted = newStatus
-        $rootScope.$broadcast('loadingStatusUpdate');
-        return loadingCompleted
-    }
+    .service('userService', ['$resource', function ($resource) {
 
-}])
+        return $resource(
+            '/x/u',
+            {format: 'json'},
+            { 'query': {method: 'GET', isArray: true} })
+
+
+    }])
+    .service('getUserDetailsNew', ['$rootScope', 'userService', function ($rootScope, userService) {
+
+        var incomingUser
+        if (globalMessages == false) {
+            var content = userService.query();
+            content.$promise.then(function (data) {
+
+
+                globalUser = data[0]
+                incomingUser = data[0]
+                console.log(data)
+                $rootScope.$broadcast('newUserDetails', incomingUser);
+
+
+            })
+        }
+        this.getEm = function () {
+
+            return incomingUser
+        }
+    }])
+
+
+    .service('loadingScreenService', ['$rootScope', function ($rootScope) {
+        var loadingCompleted = false
+
+        this.getStatus = function () {
+            return loadingCompleted
+        }
+
+        this.updateStatus = function (newStatus, $scope) {
+            loadingCompleted = newStatus
+            $rootScope.$broadcast('loadingStatusUpdate');
+            return loadingCompleted
+        }
+
+    }])
 
 
 coreApp
@@ -192,21 +242,21 @@ coreApp
     }])
 
     .controller('navCtrl', ['$rootScope', '$scope', 'userDetails', '$http', '$location', '$cookies', '$routeParams', '$route', 'Restangular',
-        'Facebook', 'getAllMessages','loadingScreenService',
-        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, getAllMessages,loadingScreenService) {
+        'Facebook', 'getAllMessages', 'loadingScreenService',
+        function ($rootScope, $scope, userDetails, $http, $location, $cookies, $routeParams, $route, Restangular, Facebook, getAllMessages, loadingScreenService) {
 
             setCookie('uas', false, 0)
 
             var fullPath = $location.path();
             $scope.urlPath = {
-                'navPath': fullPath.split("/")[1]
+                'navPath': fullPath.split("/")[2]
             }
 
             $scope.$on('$locationChangeStart', function (event) {
 
                 var fullPath = $location.path();
                 $scope.urlPath = {
-                    'navPath': fullPath.split("/")[1]
+                    'navPath': fullPath.split("/")[2]
                 }
 
             });
@@ -234,7 +284,6 @@ coreApp
                         setCookie('uas', false, 0)
                         loadingScreenService.updateStatus(true)
                     }
-
 
 
                 },function () {
@@ -315,7 +364,7 @@ coreApp
             }
         }
          $scope.getAllContent()**/
-            $scope.messages = getAllMessages.getEm()
+        $scope.messages = getAllMessages.getEm()
         $scope.$on('myEvent', function (event, data) {
             $scope.messages = globalMessages
 
@@ -323,12 +372,19 @@ coreApp
         })
 
     }])
-    .controller('coreCtrl', ['$scope', '$location', '$routeParams', 'corecms', 'messageService', 'getAllMessages',
-        function ($scope, $location, $routeParams, corecms, messageService, getAllMessages) {
+    .controller('coreCtrl', ['$scope', '$location', '$routeParams', 'corecms', 'messageService', 'getAllMessages', 'getUserDetailsNew',
+        function ($scope, $location, $routeParams, corecms, messageService, getAllMessages, getUserDetailsNew) {
+            $scope.theUser = ''
             $scope.messages = getAllMessages.getEm()
             $scope.$on('myEvent', function (event, data) {
                 $scope.messages = globalMessages
 
+
+            })
+            $scope.$on('newUserDetails', function () {
+
+                console.log(globalUser.fields.first_name)
+                $scope.theUser = globalUser.fields
 
             })
 

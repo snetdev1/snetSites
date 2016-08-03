@@ -22,7 +22,7 @@
     <!--<![endif]-->
 
     <link rel="stylesheet" href="static/custom/css/presentation.css">
-    <base href="/">
+    <base href="/app">
 
     <style>
         .pureMenuSelected {
@@ -93,15 +93,15 @@
 
                 <ul class="pure-menu-list">
                     <li class="pure-menu-item">
-                        <a href="/hello" class="pure-menu-link"
+                        <a href="app/hello" class="pure-menu-link"
                            data-ng-class="{pureMenuSelected:urlPath.navPath=='hello'}">Home</a>
                     </li>
                     <li class="pure-menu-item">
-                        <a href="/about" class="pure-menu-link"
+                        <a href="app/about" class="pure-menu-link"
                            data-ng-class="{pureMenuSelected:urlPath.navPath=='about'}">About</a>
                     </li>
                     <li class=" pure-menu-item" title="A Journey">
-                        <a href="/spacebot" class="pure-menu-link" data-ng-class="{pureMenuSelected:urlPath.navPath=='spacebot'}">SpaceBot</a>
+                        <a href="app/spacebot" class="pure-menu-link" data-ng-class="{pureMenuSelected:urlPath.navPath=='spacebot'}">SpaceBot</a>
                     </li>
 
                     <li class=" pure-menu-item" title="Browse the source code">
@@ -115,16 +115,16 @@
                         </a>
                     </li>
                     <li class="pure-menu-item " data-ng-if="nav.userNav">
-                        <a href="/x/" class="pure-menu-link">{{navItems.projects}}</a>
+                        <a href="/x/" target="_self" class="pure-menu-link">{{navItems.projects}}</a>
 
                     </li>
 
 
                     <li data-ng-if="u[0].fields.is_staff" class="pure-menu-item">
-                        <a href="/x/admin/" class="pure-menu-link">{{navItems.admin}}</a>
+                        <a href="/x/admin/" target="_self" class="pure-menu-link">{{navItems.admin}}</a>
                     </li>
                     <li data-ng-if="nav.userNav" class="pure-menu-item">
-                        <a href="/logout" class="pure-menu-link">{{navItems.logout}}</a>
+                        <a href="/logout" target="_self" class="pure-menu-link">{{navItems.logout}}</a>
                     </li>
 
                     <!--<li data-ng-if=" nav.userNav" class="pure-menu-item">

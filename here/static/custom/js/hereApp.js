@@ -71,8 +71,8 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
 })
 
 
-    .config(['$routeProvider', '$httpProvider',
-        function ($routeProvider, $httpProvider) {
+    .config(['$routeProvider', '$httpProvider','$locationProvider',
+        function ($routeProvider, $httpProvider,$locationProvider) {
             console.log('configuring')
             $routeProvider.
 
@@ -85,39 +85,16 @@ var coreApp = angular.module('coreApp', ['ngRoute', 'ngCookies', 'ngResource', '
                 }).when('/create', {
                     templateUrl: 'create.html',
                     controller: 'createCtrl'
-                }).when('/addll/:addressID?', {
-                    templateUrl: 'addLL.html',
-                    controller: 'addLLCtrl'
-                })
-                .when('/test', {
-                    templateUrl: 'test.html',
-                    controller: 'testCtrl'
-                })
-
-
-                .when('/testmap', {
-                    templateUrl: 'ngmap2.html',
-                    controller: 'LayerKmlFeaturesCtrl'
-                }).when('/:stateID', {
-                    templateUrl: 'ngmap3.html',
-                    controller: 'showCountiesCtrl'
-                }).when('/:stateID/:countyID', {
-                    templateUrl: 'ngmap3.html',
-                    controller: 'showPrecinctsCtrl'
-                })
-                .when('/:stateID/:countyID/:precinctID', {
-                    templateUrl: 'ngmap3.html',
-                    controller: 'showAddressesCtrl'
-                }).when('/:stateID/:countyID/:precinctID/:addressID', {
-                    templateUrl: 'votersPerAddress.html',
-                    controller: 'showVotersCtrl'
-                })
-                .otherwise({
-                    redirectTo: '/35'
+                })                .otherwise({
+                    redirectTo: '/'
                 });
             $httpProvider.defaults.xsrfCookieName = 'csrftoken';
             $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
             $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+            /*$locationProvider.html5Mode({
+                    enabled: true,
+                    requireBase: false
+                })*/
         }
     ])
 
